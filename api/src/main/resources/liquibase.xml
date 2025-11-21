@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <!-- ============================================================ -->
+    <!-- SIH SALUS INTEROPERABILITY MODULE - DATABASE SCHEMA         -->
+    <!-- Cola de Mensajes para Arquitectura Offline-First            -->
+    <!-- ============================================================ -->
+
+    <changeSet id="sihsalus-interop-2024-11-21-1000" author="sihsalus-team">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="sihsalus_interop_queue"/>
+            </not>
+        </preConditions>
+        <comment>
+            Crear tabla principal para la cola de mensajes de interoperabilidad.
+            Almacena mensajes FHIR/FUA pendientes de envío a RENHICE/SETI-SIS.
+        </comment>
+
+        <createTable tableName="sihsalus_interop_queue">
+            <!-- Clave Primaria -->
+            <column name="queue_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <!-- Tipo de Mensaje: FHIR_BUNDLE o FUA_DOCUMENT -->
+            <column name="message_type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Payload del Mensaje (JSON/XML serializado) -->
+            <column name="payload" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Estado: PENDING, PROCESSING, SENT, ERROR, FAILED -->
+            <column name="status" type="varchar(20)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Número de intentos de envío realizados -->
+            <column name="attempts" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Máximo número de reintentos permitidos -->
+            <column name="max_attempts" type="int" defaultValueNumeric="5">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Fecha/hora de creación del item en la cola -->
+            <column name="queued_at" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Fecha/hora del último intento de envío -->
+            <column name="last_attempt_at" type="datetime"/>
+
+            <!-- Fecha/hora de envío exitoso -->
+            <column name="sent_at" type="datetime"/>
+
+            <!-- Mensaje de error del último intento -->
+            <column name="error_message" type="TEXT"/>
+
+            <!-- URL del endpoint de destino -->
+            <column name="target_endpoint" type="varchar(500)"/>
+
+            <!-- ID del recurso en el sistema externo -->
+            <column name="external_resource_id" type="varchar(255)"/>
+
+            <!-- Campos de auditoría OpenMRS (BaseOpenmrsData) -->
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="retired" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int"/>
+            <column name="date_retired" type="datetime"/>
+            <column name="retire_reason" type="varchar(255)"/>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <!-- Índices para optimizar consultas -->
+        <createIndex indexName="idx_status" tableName="sihsalus_interop_queue">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="idx_message_type" tableName="sihsalus_interop_queue">
+            <column name="message_type"/>
+        </createIndex>
+
+        <createIndex indexName="idx_queued_at" tableName="sihsalus_interop_queue">
+            <column name="queued_at"/>
+        </createIndex>
+
+        <!-- Foreign keys a users de OpenMRS -->
+        <addForeignKeyConstraint 
+            constraintName="sihsalus_queue_creator_fk"
+            baseTableName="sihsalus_interop_queue" 
+            baseColumnNames="creator"
+            referencedTableName="users" 
+            referencedColumnNames="user_id"/>
+
+        <addForeignKeyConstraint 
+            constraintName="sihsalus_queue_changed_by_fk"
+            baseTableName="sihsalus_interop_queue" 
+            baseColumnNames="changed_by"
+            referencedTableName="users" 
+            referencedColumnNames="user_id"/>
+
+        <addForeignKeyConstraint 
+            constraintName="sihsalus_queue_retired_by_fk"
+            baseTableName="sihsalus_interop_queue" 
+            baseColumnNames="retired_by"
+            referencedTableName="users" 
+            referencedColumnNames="user_id"/>
+    </changeSet>
+
+</databaseChangeLog>
+

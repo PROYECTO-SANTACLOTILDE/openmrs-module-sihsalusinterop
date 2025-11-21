@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module configVersion="1.2">
+	
+	<!-- Base Module Properties -->
+	<id>${project.parent.artifactId}</id>
+	<name>${project.parent.name}</name>
+	<version>${project.parent.version}</version>
+	<package>org.openmrs.module.sihsalusinterop</package>
+	<author>Hospital Santa Clotilde - SIH.SALUS Team</author>
+	<description>
+			${project.parent.description}
+	</description>
+
+	<activator>org.openmrs.module.sihsalusinterop.SihSalusInteropActivator</activator>
+	
+	<!-- <updateURL>https://modules.openmrs.org/modules/download/@MODULE_ID@/update.rdf</updateURL> -->
+	<!-- /Base Module Properties -->
+	
+	<require_version>1.11.6</require_version>
+	
+	<!-- Liquibase Configuration -->
+	<databaseVersion>
+		<version>1.0.0</version>
+	</databaseVersion>
+	
+	<!-- Hibernate Mapping Files -->
+	<mappingFiles>
+		SihSalusInterop.hbm.xml
+	</mappingFiles>
+	
+	<!-- Extensions -->
+	
+
+	<aware_of_modules>
+		<aware_of_module>org.openmrs.module.legacyui</aware_of_module>
+	</aware_of_modules>
+	
+	
+	<!-- AOP
+	<advice>
+		<point>org.openmrs.api.FormService</point>
+		<class>@MODULE_PACKAGE@.advice.DuplicateFormAdvisor</class>
+	</advice>
+	 /AOP -->
+	
+	
+	<!-- Required Privileges 
+	<privilege>
+		<name>Form Entry</name>
+		<description>Allows user to access Form Entry pages/functions</description>
+	</privilege>
+	 /Required Privileges -->
+
+	<privilege>
+		<name>SIH SALUS Interop Privilege</name>
+		<description>Allows user to access SIH SALUS Interoperability module functions</description>
+	</privilege>
+
+	<privilege>
+		<name>Manage Interop Queue</name>
+		<description>Allows user to manage interoperability message queue (FHIR/FUA)</description>
+	</privilege>
+
+	<privilege>
+		<name>Send FHIR Messages</name>
+		<description>Allows user to send FHIR messages to RENHICE</description>
+	</privilege>
+
+	<privilege>
+		<name>Generate FUA</name>
+		<description>Allows user to generate and send FUA documents to SETI-SIS</description>
+	</privilege>
+
+	<privilege>
+		<name>View Interop Logs</name>
+		<description>Allows user to view interoperability logs and queue status</description>
+	</privilege>
+
+	<!-- Required Global Properties 
+	<globalProperty>
+		<property>@MODULE_ID@.someProperty</property>
+		<defaultValue></defaultValue>
+		<description>
+			A description of the global property goes here.  The description
+			should explain enough for administrators to understand the purpose
+			and possible values for the global property.
+		</description>
+	</globalProperty>
+	/Required Global Properties -->
+	
+	<!--
+	<dwr>
+		<allow>
+			<create creator="new" javascript="DWRFormEntryService">
+				<param name="class" value="org.openmrs.module.@MODULE_ID@.web.DWRFormEntryService"/>
+				<include method="enterForm"/>
+			</create>
+		</allow>
+
+		<signatures>
+			<![CDATA[
+			import @MODULE_PACKAGE@.web.DWRFormEntryService;
+			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
+			]]>
+		</signatures>	
+	</dwr>
+	-->
+	
+	<!-- Servlets -->
+	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> 
+	<servlet>
+		<servlet-name>formDownload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.FormDownloadServlet</servlet-class>
+	</servlet>
+	-->
+	<!-- /Servlets -->
+	
+	
+	<!-- Internationalization -->
+	<!-- All message codes should start with @MODULE_ID@.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+	
+</module>
+

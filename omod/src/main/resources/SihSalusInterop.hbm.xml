@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="org.openmrs.module.sihsalusinterop.api.model">
+
+    <!-- ============================================================ -->
+    <!-- SIH SALUS INTEROPERABILITY - HIBERNATE MAPPING              -->
+    <!-- Mapeo de InteropQueueItem a sihsalus_interop_queue          -->
+    <!-- ============================================================ -->
+
+    <class name="InteropQueueItem" table="sihsalus_interop_queue">
+
+        <!-- Clave Primaria -->
+        <id name="queueId" type="int" column="queue_id">
+            <generator class="identity"/>
+        </id>
+
+        <!-- UUID (heredado de BaseOpenmrsData) -->
+        <property name="uuid" type="string" column="uuid" length="38" unique="true" not-null="true"/>
+
+        <!-- Campos de Auditoría (heredados de BaseOpenmrsData) -->
+        <many-to-one name="creator" class="org.openmrs.User" column="creator" not-null="true"/>
+        <property name="dateCreated" type="timestamp" column="date_created" not-null="true"/>
+        <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by"/>
+        <property name="dateChanged" type="timestamp" column="date_changed"/>
+        <property name="retired" type="boolean" column="retired" not-null="true"/>
+        <many-to-one name="retiredBy" class="org.openmrs.User" column="retired_by"/>
+        <property name="dateRetired" type="timestamp" column="date_retired"/>
+        <property name="retireReason" type="string" column="retire_reason" length="255"/>
+
+        <!-- Campos Específicos de la Cola de Mensajes -->
+        <property name="messageType" type="string" column="message_type" length="50" not-null="true"/>
+        <property name="payload" type="text" column="payload" not-null="true"/>
+        <property name="status" type="string" column="status" length="20" not-null="true"/>
+        <property name="attempts" type="int" column="attempts" not-null="true"/>
+        <property name="maxAttempts" type="int" column="max_attempts" not-null="true"/>
+        <property name="queuedAt" type="timestamp" column="queued_at" not-null="true"/>
+        <property name="lastAttemptAt" type="timestamp" column="last_attempt_at"/>
+        <property name="sentAt" type="timestamp" column="sent_at"/>
+        <property name="errorMessage" type="text" column="error_message"/>
+        <property name="targetEndpoint" type="string" column="target_endpoint" length="500"/>
+        <property name="externalResourceId" type="string" column="external_resource_id" length="255"/>
+
+    </class>
+
+</hibernate-mapping>
+

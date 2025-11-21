@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+    <!-- ============================================================ -->
+    <!-- SIH SALUS INTEROPERABILITY MODULE - SPRING CONFIGURATION    -->
+    <!-- Configuración de Beans, DAOs y Servicios                    -->
+    <!-- ============================================================ -->
+
+    <!-- Activar anotaciones transaccionales -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- Escanear componentes en el paquete api -->
+    <context:component-scan base-package="org.openmrs.module.sihsalusinterop.api" />
+
+    <!-- ============================================================ -->
+    <!-- DAO LAYER - Data Access Objects                             -->
+    <!-- ============================================================ -->
+
+    <!-- InteropQueueDao - Acceso a datos de la cola de mensajes -->
+    <bean id="sihsalusinterop.InteropQueueDao" 
+          class="org.openmrs.module.sihsalusinterop.api.dao.InteropQueueDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- ============================================================ -->
+    <!-- SERVICE LAYER - Servicios de Negocio                        -->
+    <!-- ============================================================ -->
+
+    <!-- DyakuSenderService - Servicio principal de interoperabilidad FHIR -->
+    <bean id="sihsalusinterop.DyakuSenderService" 
+          class="org.openmrs.module.sihsalusinterop.api.impl.DyakuSenderServiceImpl"
+          parent="serviceContext">
+        <property name="dao" ref="sihsalusinterop.InteropQueueDao"/>
+    </bean>
+
+    <!-- ============================================================ -->
+    <!-- EXPONER SERVICIOS A LA API DE OPENMRS                       -->
+    <!-- ============================================================ -->
+
+    <!-- Registrar el servicio en el contexto de OpenMRS -->
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>org.openmrs.module.sihsalusinterop.api.DyakuSenderService</value>
+                <ref bean="sihsalusinterop.DyakuSenderService"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
+
