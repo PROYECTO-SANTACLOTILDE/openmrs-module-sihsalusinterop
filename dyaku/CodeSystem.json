@@ -1,0 +1,935 @@
+{
+  "resourceType": "Bundle",
+  "id": "dd43b517-db81-4f9c-adc8-b749013b541c",
+  "meta": {
+    "lastUpdated": "2025-11-18T21:10:53.737+00:00"
+  },
+  "type": "searchset",
+  "total": 4,
+  "link": [ {
+    "relation": "self",
+    "url": "http://dyaku.minsa.gob.pe/fhir/CodeSystem?_format=json"
+  } ],
+  "entry": [ {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/CodeSystem/ColegiosProfesionalesSaludCS",
+    "resource": {
+      "resourceType": "CodeSystem",
+      "id": "ColegiosProfesionalesSaludCS",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/ColegiosProfesionalesSaludCS",
+      "name": "ColegiosProfesionalesSaludCS",
+      "title": "Colegios Profesionales de Salud CS.",
+      "status": "active",
+      "experimental": false,
+      "date": "2023-05-01",
+      "publisher": "MSP Peru.",
+      "description": "Colegios Profesionales de Salud CS.",
+      "content": "complete",
+      "count": 11,
+      "concept": [ {
+        "code": "00",
+        "display": "Personal de Salud sin Colegiatura",
+        "definition": "Personal de Salud sin Colegiatura"
+      }, {
+        "code": "01",
+        "display": "Colegio Médico del Perú",
+        "definition": "Colegio Médico del Perú"
+      }, {
+        "code": "02",
+        "display": "Colegio Químico Farmacéutico del Perú",
+        "definition": "Colegio Químico Farmacéutico del Perú"
+      }, {
+        "code": "03",
+        "display": "Colegio Odontolóico del Perú",
+        "definition": "Colegio Odontolóico del Perú"
+      }, {
+        "code": "04",
+        "display": "Colegio de Biólogos del Perú",
+        "definition": "Colegio de Biólogos del Perú"
+      }, {
+        "code": "05",
+        "display": "Colegio de Obstetrices del Perú",
+        "definition": "Colegio de Obstetrices del Perú"
+      }, {
+        "code": "06",
+        "display": "Colegio de Enfermeros del Perú",
+        "definition": "Colegio de Enfermeros del Perú"
+      }, {
+        "code": "07",
+        "display": "Colegio de Trabajadores Sociales del Perú",
+        "definition": "Colegio de Trabajadores Sociales del Perú"
+      }, {
+        "code": "08",
+        "display": "Colegio de Psicólogos del Perú",
+        "definition": "Colegio de Psicólogos del Perú"
+      }, {
+        "code": "09",
+        "display": "Colegio Tecnólo Médico del Perú",
+        "definition": "Colegio Tecnólo Médico del Perú"
+      }, {
+        "code": "1O",
+        "display": "Colegio de Nutricionistas del Perú",
+        "definition": "Colegio de Nutricionistas del Perú"
+      } ]
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/CodeSystem/IdspersonaPeru",
+    "resource": {
+      "resourceType": "CodeSystem",
+      "id": "IdspersonaPeru",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/IdspersonaPeru",
+      "name": "IdspersonaPeru",
+      "title": "Identificadores de Persona CS",
+      "status": "active",
+      "experimental": false,
+      "date": "2023-05-01",
+      "publisher": "MSP Peru.",
+      "description": "Identificadores de Persona Peru VS.",
+      "content": "complete",
+      "count": 4,
+      "concept": [ {
+        "code": "1",
+        "display": "DNI",
+        "definition": "DNI"
+      }, {
+        "code": "2",
+        "display": "Carné extranjería",
+        "definition": "Carné extranjería"
+      }, {
+        "code": "3",
+        "display": "Pasaporte",
+        "definition": "Pasaporte"
+      }, {
+        "code": "4",
+        "display": "Documento de identidad extranjero",
+        "definition": "Documento de identidad extranjero"
+      } ]
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/CodeSystem/IPRESSCS",
+    "resource": {
+      "resourceType": "CodeSystem",
+      "id": "IPRESSCS",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/IPRESSCS",
+      "name": "IPRESSCS",
+      "title": "Instituciones Prestadoras de Servicios de Salud IPRESS CS",
+      "status": "active",
+      "experimental": false,
+      "date": "2023-05-01",
+      "publisher": "MSP Peru.",
+      "description": "Instituciones Prestadoras de Servicios de Salud IPRESS CS",
+      "content": "complete",
+      "count": 1,
+      "property": [ {
+        "code": "clasificacion",
+        "description": "Utilizado para la clasificacion del establecimiento",
+        "type": "string"
+      }, {
+        "code": "tipo",
+        "description": "tipo de establecimiento",
+        "type": "string"
+      } ],
+      "concept": [ {
+        "code": "00031361",
+        "display": "ESTETICA DENTAL SONRIE",
+        "definition": "ESTETICA DENTAL SONRIE",
+        "property": [ {
+          "code": "clasificacion",
+          "valueString": "CONSULTORIOS MEDICOS Y DE OTROS PROFESIONALES DE LA SALUD"
+        }, {
+          "code": "tipo",
+          "valueString": "ESTABLECIMIENTO DE SALUD SIN INTERNAMIENTO"
+        } ]
+      } ]
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/CodeSystem/PaisesCS",
+    "resource": {
+      "resourceType": "CodeSystem",
+      "id": "PaisesCS",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/PaisesCS",
+      "name": "PaisesCS",
+      "title": "Códigos del País CS",
+      "status": "active",
+      "description": "Códigos definidos para la identificación de países según Norma ISO3166-N Alfa3",
+      "content": "complete",
+      "count": 248,
+      "concept": [ {
+        "code": "AFG",
+        "display": "Afganistán"
+      }, {
+        "code": "ALB",
+        "display": "Albaia"
+      }, {
+        "code": "DEU",
+        "display": "Alemnia"
+      }, {
+        "code": "AND",
+        "display": "Andora"
+      }, {
+        "code": "AGO",
+        "display": "Angoa"
+      }, {
+        "code": "AIA",
+        "display": "Angula"
+      }, {
+        "code": "ATA",
+        "display": "Antátida"
+      }, {
+        "code": "ATG",
+        "display": "Antiua y Barbuda"
+      }, {
+        "code": "SAU",
+        "display": "Araba Saudita"
+      }, {
+        "code": "DZA",
+        "display": "Argeia"
+      }, {
+        "code": "ARG",
+        "display": "Argetina"
+      }, {
+        "code": "ARM",
+        "display": "Armeia"
+      }, {
+        "code": "ABW",
+        "display": "Arub"
+      }, {
+        "code": "AUS",
+        "display": "Austalia"
+      }, {
+        "code": "AUT",
+        "display": "Austia"
+      }, {
+        "code": "AZE",
+        "display": "Azeraiyán"
+      }, {
+        "code": "BEL",
+        "display": "Bélgca"
+      }, {
+        "code": "BHS",
+        "display": "Bahaas"
+      }, {
+        "code": "BHR",
+        "display": "Bahrin"
+      }, {
+        "code": "BGD",
+        "display": "Bangadesh"
+      }, {
+        "code": "BRB",
+        "display": "Barbdos"
+      }, {
+        "code": "BLZ",
+        "display": "Belie"
+      }, {
+        "code": "BEN",
+        "display": "Bení"
+      }, {
+        "code": "BTN",
+        "display": "Bhutn"
+      }, {
+        "code": "BLR",
+        "display": "Bielrrusia"
+      }, {
+        "code": "MMR",
+        "display": "Birmnia"
+      }, {
+        "code": "BOL",
+        "display": "Boliia"
+      }, {
+        "code": "BIH",
+        "display": "Bosna y Herzegovina"
+      }, {
+        "code": "BWA",
+        "display": "Botsana"
+      }, {
+        "code": "BRA",
+        "display": "Brasl"
+      }, {
+        "code": "BRN",
+        "display": "Bruni"
+      }, {
+        "code": "BGR",
+        "display": "Bulgria"
+      }, {
+        "code": "BFA",
+        "display": "Burkna Faso"
+      }, {
+        "code": "BDI",
+        "display": "Burudi"
+      }, {
+        "code": "CPV",
+        "display": "CaboVerde"
+      }, {
+        "code": "KHM",
+        "display": "Cambya"
+      }, {
+        "code": "CMR",
+        "display": "Cameún"
+      }, {
+        "code": "CAN",
+        "display": "Canaá"
+      }, {
+        "code": "TCD",
+        "display": "Chad"
+      }, {
+        "code": "CHL",
+        "display": "Chile"
+      }, {
+        "code": "CHN",
+        "display": "Chin"
+      }, {
+        "code": "CYP",
+        "display": "Chipe"
+      }, {
+        "code": "VAT",
+        "display": "Ciudd del Vaticano"
+      }, {
+        "code": "COL",
+        "display": "Colobia"
+      }, {
+        "code": "COM",
+        "display": "Comoas"
+      }, {
+        "code": "COG",
+        "display": "Repúlica del Congo"
+      }, {
+        "code": "COD",
+        "display": "Repúlica Democrática del Congo"
+      }, {
+        "code": "PRK",
+        "display": "Core del Norte"
+      }, {
+        "code": "KOR",
+        "display": "Core del Sur"
+      }, {
+        "code": "CIV",
+        "display": "Cost de Marfil"
+      }, {
+        "code": "CRI",
+        "display": "Cost Rica"
+      }, {
+        "code": "HRV",
+        "display": "Croaia"
+      }, {
+        "code": "CUB",
+        "display": "Cuba"
+      }, {
+        "code": "CWU",
+        "display": "Curazao"
+      }, {
+        "code": "DNK",
+        "display": "Dinaarca"
+      }, {
+        "code": "DMA",
+        "display": "Domiica"
+      }, {
+        "code": "ECU",
+        "display": "Ecuaor"
+      }, {
+        "code": "EGY",
+        "display": "Egipo"
+      }, {
+        "code": "SLV",
+        "display": "El Slvador"
+      }, {
+        "code": "ARE",
+        "display": "Emirtos Árabes Unidos"
+      }, {
+        "code": "ERI",
+        "display": "Eritea"
+      }, {
+        "code": "SVK",
+        "display": "Esloaquia"
+      }, {
+        "code": "SVN",
+        "display": "Esloenia"
+      }, {
+        "code": "ESP",
+        "display": "Espaa"
+      }, {
+        "code": "USA",
+        "display": "Estaos Unidos de América"
+      }, {
+        "code": "EST",
+        "display": "Estoia"
+      }, {
+        "code": "ETH",
+        "display": "Etioía"
+      }, {
+        "code": "PHL",
+        "display": "Filiinas"
+      }, {
+        "code": "FIN",
+        "display": "Finlndia"
+      }, {
+        "code": "FJI",
+        "display": "Fiyi"
+      }, {
+        "code": "FRA",
+        "display": "Francia"
+      }, {
+        "code": "GAB",
+        "display": "Gabó"
+      }, {
+        "code": "GMB",
+        "display": "Gamba"
+      }, {
+        "code": "GEO",
+        "display": "Georia"
+      }, {
+        "code": "GHA",
+        "display": "Ghan"
+      }, {
+        "code": "GIB",
+        "display": "Gibrltar"
+      }, {
+        "code": "GRD",
+        "display": "Granda"
+      }, {
+        "code": "GRC",
+        "display": "Greca"
+      }, {
+        "code": "GRL",
+        "display": "Groelandia"
+      }, {
+        "code": "GLP",
+        "display": "Guadlupe"
+      }, {
+        "code": "GUM",
+        "display": "Guam"
+      }, {
+        "code": "GTM",
+        "display": "Guatemala"
+      }, {
+        "code": "GUF",
+        "display": "Guayna Francesa"
+      }, {
+        "code": "GGY",
+        "display": "Guersey"
+      }, {
+        "code": "GIN",
+        "display": "Guina"
+      }, {
+        "code": "GNQ",
+        "display": "Guina Ecuatorial"
+      }, {
+        "code": "GNB",
+        "display": "Guina-Bissau"
+      }, {
+        "code": "GUY",
+        "display": "Guyaa"
+      }, {
+        "code": "HTI",
+        "display": "Hait"
+      }, {
+        "code": "HND",
+        "display": "Hondras"
+      }, {
+        "code": "HKG",
+        "display": "Hongkong"
+      }, {
+        "code": "HUN",
+        "display": "Hungía"
+      }, {
+        "code": "IND",
+        "display": "Indi"
+      }, {
+        "code": "IDN",
+        "display": "Indoesia"
+      }, {
+        "code": "IRN",
+        "display": "Irán"
+      }, {
+        "code": "IRQ",
+        "display": "Irak"
+      }, {
+        "code": "IRL",
+        "display": "Irlada"
+      }, {
+        "code": "BVT",
+        "display": "IslaBouvet"
+      }, {
+        "code": "IMN",
+        "display": "Islade Man"
+      }, {
+        "code": "CXR",
+        "display": "Islade Navidad"
+      }, {
+        "code": "NFK",
+        "display": "IslaNorfolk"
+      }, {
+        "code": "ISL",
+        "display": "Isladia"
+      }, {
+        "code": "BMU",
+        "display": "Isla Bermudas"
+      }, {
+        "code": "CYM",
+        "display": "Isla Caimán"
+      }, {
+        "code": "CCK",
+        "display": "Isla Cocos (Keeling)"
+      }, {
+        "code": "COK",
+        "display": "Isla Cook"
+      }, {
+        "code": "ALA",
+        "display": "Isla de Åland"
+      }, {
+        "code": "FRO",
+        "display": "Isla Feroe"
+      }, {
+        "code": "SGS",
+        "display": "Isla Georgias del Sur y Sandwich del Sur"
+      }, {
+        "code": "HMD",
+        "display": "Isla Heard y McDonald"
+      }, {
+        "code": "MDV",
+        "display": "Isla Maldivas"
+      }, {
+        "code": "FLK",
+        "display": "Isla Malvinas"
+      }, {
+        "code": "MNP",
+        "display": "Isla Marianas del Norte"
+      }, {
+        "code": "MHL",
+        "display": "Isla Marshall"
+      }, {
+        "code": "PCN",
+        "display": "Isla Pitcairn"
+      }, {
+        "code": "SLB",
+        "display": "Isla Salomón"
+      }, {
+        "code": "TCA",
+        "display": "Isla Turcas y Caicos"
+      }, {
+        "code": "UMI",
+        "display": "Isla Ultramarinas Menores de Estados Unidos"
+      }, {
+        "code": "VGB",
+        "display": "Isla Vírgenes Británicas"
+      }, {
+        "code": "VIR",
+        "display": "Isla Vírgenes de los Estados Unidos"
+      }, {
+        "code": "ISR",
+        "display": "Isral"
+      }, {
+        "code": "ITA",
+        "display": "Itala"
+      }, {
+        "code": "JAM",
+        "display": "Jamaca"
+      }, {
+        "code": "JPN",
+        "display": "Japó"
+      }, {
+        "code": "JEY",
+        "display": "Jersy"
+      }, {
+        "code": "JOR",
+        "display": "Jordnia"
+      }, {
+        "code": "KAZ",
+        "display": "Kazaistán"
+      }, {
+        "code": "KEN",
+        "display": "Keni"
+      }, {
+        "code": "KGZ",
+        "display": "Kirgistán"
+      }, {
+        "code": "KIR",
+        "display": "Kiriati"
+      }, {
+        "code": "KWT",
+        "display": "Kuwat"
+      }, {
+        "code": "LBN",
+        "display": "Líbao"
+      }, {
+        "code": "LAO",
+        "display": "Laos"
+      }, {
+        "code": "LSO",
+        "display": "Lesoto"
+      }, {
+        "code": "LVA",
+        "display": "Letoia"
+      }, {
+        "code": "LBR",
+        "display": "Libeia"
+      }, {
+        "code": "LBY",
+        "display": "Libi"
+      }, {
+        "code": "LIE",
+        "display": "Liectenstein"
+      }, {
+        "code": "LTU",
+        "display": "Litunia"
+      }, {
+        "code": "LUX",
+        "display": "Luxeburgo"
+      }, {
+        "code": "MEX",
+        "display": "Méxio"
+      }, {
+        "code": "MCO",
+        "display": "Mónao"
+      }, {
+        "code": "MAC",
+        "display": "Maca"
+      }, {
+        "code": "MKD",
+        "display": "Maceônia"
+      }, {
+        "code": "MDG",
+        "display": "Madaascar"
+      }, {
+        "code": "MYS",
+        "display": "Malaia"
+      }, {
+        "code": "MWI",
+        "display": "Malai"
+      }, {
+        "code": "MLI",
+        "display": "Mali"
+      }, {
+        "code": "MLT",
+        "display": "Malta"
+      }, {
+        "code": "MAR",
+        "display": "Marrecos"
+      }, {
+        "code": "MTQ",
+        "display": "Martnica"
+      }, {
+        "code": "MUS",
+        "display": "Maurcio"
+      }, {
+        "code": "MRT",
+        "display": "Maurtania"
+      }, {
+        "code": "MYT",
+        "display": "Mayote"
+      }, {
+        "code": "FSM",
+        "display": "Micrnesia"
+      }, {
+        "code": "MDA",
+        "display": "Moldvia"
+      }, {
+        "code": "MNG",
+        "display": "Monglia"
+      }, {
+        "code": "MNE",
+        "display": "Montnegro"
+      }, {
+        "code": "MSR",
+        "display": "Monterrat"
+      }, {
+        "code": "MOZ",
+        "display": "Mozabique"
+      }, {
+        "code": "NAM",
+        "display": "Namiia"
+      }, {
+        "code": "NRU",
+        "display": "Naur"
+      }, {
+        "code": "NPL",
+        "display": "Nepa"
+      }, {
+        "code": "NIC",
+        "display": "Nicaagua"
+      }, {
+        "code": "NER",
+        "display": "Nige"
+      }, {
+        "code": "NGA",
+        "display": "Nigeia"
+      }, {
+        "code": "NIU",
+        "display": "Niue"
+      }, {
+        "code": "NOR",
+        "display": "Noruega"
+      }, {
+        "code": "NCL",
+        "display": "Nuev Caledonia"
+      }, {
+        "code": "NZL",
+        "display": "Nuev Zelanda"
+      }, {
+        "code": "OMN",
+        "display": "Omán"
+      }, {
+        "code": "NLD",
+        "display": "Países Bajos"
+      }, {
+        "code": "PAK",
+        "display": "Pakitán"
+      }, {
+        "code": "PLW",
+        "display": "Pala"
+      }, {
+        "code": "PSE",
+        "display": "Paletina"
+      }, {
+        "code": "PAN",
+        "display": "Panaá"
+      }, {
+        "code": "PNG",
+        "display": "Papú Nueva Guinea"
+      }, {
+        "code": "PRY",
+        "display": "Parauay"
+      }, {
+        "code": "PER",
+        "display": "Perú"
+      }, {
+        "code": "PYF",
+        "display": "Polinesia Francesa"
+      }, {
+        "code": "POL",
+        "display": "Poloia"
+      }, {
+        "code": "PRT",
+        "display": "Portgal"
+      }, {
+        "code": "PRI",
+        "display": "Puero Rico"
+      }, {
+        "code": "QAT",
+        "display": "Qata"
+      }, {
+        "code": "GBR",
+        "display": "Rein Unido"
+      }, {
+        "code": "CAF",
+        "display": "Repúlica Centroafricana"
+      }, {
+        "code": "CZE",
+        "display": "Repúlica Checa"
+      }, {
+        "code": "DOM",
+        "display": "Repúlica Dominicana"
+      }, {
+        "code": "SSD",
+        "display": "Repúlica de Sudán del Sur"
+      }, {
+        "code": "REU",
+        "display": "Reunón"
+      }, {
+        "code": "RWA",
+        "display": "Ruana"
+      }, {
+        "code": "ROU",
+        "display": "Rumaía"
+      }, {
+        "code": "RUS",
+        "display": "Rusi"
+      }, {
+        "code": "ESH",
+        "display": "Sahaa Occidental"
+      }, {
+        "code": "WSM",
+        "display": "Samo"
+      }, {
+        "code": "ASM",
+        "display": "Samo Americana"
+      }, {
+        "code": "BLM",
+        "display": "San artolomé"
+      }, {
+        "code": "KNA",
+        "display": "San ristóbal y Nieves"
+      }, {
+        "code": "SMR",
+        "display": "San arino"
+      }, {
+        "code": "MAF",
+        "display": "San artín (Francia)"
+      }, {
+        "code": "SPM",
+        "display": "San edro y Miquelón"
+      }, {
+        "code": "VCT",
+        "display": "San icente y las Granadinas"
+      }, {
+        "code": "SHN",
+        "display": "Sant Elena"
+      }, {
+        "code": "LCA",
+        "display": "Sant Lucía"
+      }, {
+        "code": "STP",
+        "display": "Sant Tomé y Príncipe"
+      }, {
+        "code": "SEN",
+        "display": "Seneal"
+      }, {
+        "code": "SRB",
+        "display": "Serba"
+      }, {
+        "code": "SYC",
+        "display": "Seycelles"
+      }, {
+        "code": "SLE",
+        "display": "Siera Leona"
+      }, {
+        "code": "SGP",
+        "display": "Singpur"
+      }, {
+        "code": "SMX",
+        "display": "SintMaarten"
+      }, {
+        "code": "SYR",
+        "display": "Siri"
+      }, {
+        "code": "SOM",
+        "display": "Somaia"
+      }, {
+        "code": "LKA",
+        "display": "Sri anka"
+      }, {
+        "code": "ZAF",
+        "display": "Sudárica"
+      }, {
+        "code": "SDN",
+        "display": "Sudá"
+      }, {
+        "code": "SWE",
+        "display": "Sueca"
+      }, {
+        "code": "CHE",
+        "display": "Suiz"
+      }, {
+        "code": "SUR",
+        "display": "Suriám"
+      }, {
+        "code": "SJM",
+        "display": "Svalard y Jan Mayen"
+      }, {
+        "code": "SWZ",
+        "display": "Swazlandia"
+      }, {
+        "code": "TJK",
+        "display": "Tayiistán"
+      }, {
+        "code": "THA",
+        "display": "Tailndia"
+      }, {
+        "code": "TWN",
+        "display": "Taiwn"
+      }, {
+        "code": "TZA",
+        "display": "Tanznia"
+      }, {
+        "code": "IOT",
+        "display": "Terrtorio Británico del Océano Índico"
+      }, {
+        "code": "ATF",
+        "display": "Terrtorios Australes y Antárticas Franceses"
+      }, {
+        "code": "TLS",
+        "display": "Timo Oriental"
+      }, {
+        "code": "TGO",
+        "display": "Togo"
+      }, {
+        "code": "TKL",
+        "display": "Tokelau"
+      }, {
+        "code": "TON",
+        "display": "Tong"
+      }, {
+        "code": "TTO",
+        "display": "Trindad y Tobago"
+      }, {
+        "code": "TUN",
+        "display": "Tune"
+      }, {
+        "code": "TKM",
+        "display": "Turkenistán"
+      }, {
+        "code": "TUR",
+        "display": "Turqía"
+      }, {
+        "code": "TUV",
+        "display": "Tuvau"
+      }, {
+        "code": "UKR",
+        "display": "Ucraia"
+      }, {
+        "code": "UGA",
+        "display": "Ugana"
+      }, {
+        "code": "URY",
+        "display": "Urugay"
+      }, {
+        "code": "UZB",
+        "display": "Uzbeistán"
+      }, {
+        "code": "VUT",
+        "display": "Vanutu"
+      }, {
+        "code": "VEN",
+        "display": "Veneuela"
+      }, {
+        "code": "VNM",
+        "display": "Vietam"
+      }, {
+        "code": "WLF",
+        "display": "Walls y Futuna"
+      }, {
+        "code": "YEM",
+        "display": "Yeme"
+      }, {
+        "code": "DJI",
+        "display": "Yibui"
+      }, {
+        "code": "ZMB",
+        "display": "Zamba"
+      }, {
+        "code": "ZWE",
+        "display": "Zimbbue"
+      } ]
+    },
+    "search": {
+      "mode": "match"
+    }
+  } ]
+}

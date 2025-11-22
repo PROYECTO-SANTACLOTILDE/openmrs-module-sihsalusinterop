@@ -1,0 +1,110 @@
+{
+  "resourceType": "Bundle",
+  "id": "edd3f187-d0d9-4057-aea9-759d00a60f35",
+  "meta": {
+    "lastUpdated": "2025-11-18T21:10:51.566+00:00"
+  },
+  "type": "searchset",
+  "total": 4,
+  "link": [ {
+    "relation": "self",
+    "url": "http://dyaku.minsa.gob.pe/fhir/ValueSet?_format=json"
+  } ],
+  "entry": [ {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/ValueSet/ColegiosProfesionalesSaludVS",
+    "resource": {
+      "resourceType": "ValueSet",
+      "id": "ColegiosProfesionalesSaludVS",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/ColegiosProfesionalesSaludVS",
+      "name": "ColegiosProfesionalesSaludVS",
+      "title": "Colegios Profesionales de Salud VS.",
+      "status": "draft",
+      "description": "Colegios Profesionales de Salud VS.",
+      "compose": {
+        "include": [ {
+          "system": "https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/ColegiosProfesionalesSaludCS"
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/ValueSet/IdentificadoresPersonaVS",
+    "resource": {
+      "resourceType": "ValueSet",
+      "id": "IdentificadoresPersonaVS",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/IdentificadoresPersonaVS",
+      "name": "IdentificadoresPersonaVS",
+      "title": "Identificadores de Persona VS",
+      "status": "draft",
+      "description": "Identificadores de Persona Peru VS.",
+      "compose": {
+        "include": [ {
+          "system": "https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/IdspersonaPeru"
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/ValueSet/IPRESSVS",
+    "resource": {
+      "resourceType": "ValueSet",
+      "id": "IPRESSVS",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/IPRESSVS",
+      "name": "IPRESSVS",
+      "title": "Instituciones Prestadoras de Servicios de Salud IPRESS VS",
+      "status": "draft",
+      "description": "Instituciones Prestadoras de Servicios de Salud IPRESS VS.",
+      "compose": {
+        "include": [ {
+          "system": "https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/IPRESSCS"
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/ValueSet/PaisesVS",
+    "resource": {
+      "resourceType": "ValueSet",
+      "id": "PaisesVS",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/PaisesVS",
+      "name": "PaisesVS",
+      "title": "Códigos del País",
+      "status": "active",
+      "description": "Codigos definidos para la identificación de países segun norma ISO3166-N",
+      "compose": {
+        "include": [ {
+          "system": "https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/PaisesCS"
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  } ]
+}

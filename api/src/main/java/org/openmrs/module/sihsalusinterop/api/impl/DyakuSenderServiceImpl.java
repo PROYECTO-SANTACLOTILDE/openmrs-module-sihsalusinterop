@@ -24,7 +24,9 @@ import org.openmrs.module.sihsalusinterop.api.mapper.DyakuPatientMapper;
 import org.openmrs.module.sihsalusinterop.api.model.InteropQueueItem;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -74,7 +76,7 @@ public class DyakuSenderServiceImpl extends BaseOpenmrsService implements DyakuS
 	}
 	
 	@Override
-	public int processQueue() {
+	public Map<String, Integer> processQueue() {
 		log.info("========================================");
 		log.info(">>> Procesando cola de interoperabilidad...");
 		
@@ -82,6 +84,7 @@ public class DyakuSenderServiceImpl extends BaseOpenmrsService implements DyakuS
 		log.info(">>> Items pendientes en cola: " + pendingItems.size());
 		
 		int sentCount = 0;
+		int processedCount = 0;
 		
 		for (InteropQueueItem item : pendingItems) {
 			// Verificar si no ha excedido el máximo de intentos
@@ -90,10 +93,12 @@ public class DyakuSenderServiceImpl extends BaseOpenmrsService implements DyakuS
 				item.setStatus("FAILED");
 				item.setErrorMessage("Máximo número de reintentos alcanzado (" + item.getMaxAttempts() + ")");
 				dao.save(item);
+				processedCount++;
 				continue;
 			}
 			
 			// Intentar enviar el mensaje
+			processedCount++;
 			boolean success = sendMessage(item);
 			
 			if (success) {
@@ -101,10 +106,13 @@ public class DyakuSenderServiceImpl extends BaseOpenmrsService implements DyakuS
 			}
 		}
 		
-		log.info(">>> Mensajes enviados exitosamente: " + sentCount + "/" + pendingItems.size());
+		log.info(">>> Procesados: " + processedCount + " | Exitosos: " + sentCount + " | Fallidos: " + (processedCount - sentCount));
 		log.info("========================================");
 		
-		return sentCount;
+		Map<String, Integer> result = new HashMap<>();
+		result.put("sentCount", sentCount);
+		result.put("processedCount", processedCount);
+		return result;
 	}
 	
 	/**
@@ -122,13 +130,13 @@ public class DyakuSenderServiceImpl extends BaseOpenmrsService implements DyakuS
 		item.setLastAttemptAt(new Date());
 		dao.save(item);
 		
+		// Obtener endpoint (fuera del try para usar en catch)
+		String endpoint = item.getTargetEndpoint();
+		if (endpoint == null || endpoint.isEmpty()) {
+			endpoint = "http://localhost:8080/fhir"; // Default
+		}
+		
 		try {
-			// Crear cliente FHIR apuntando al endpoint configurado
-			String endpoint = item.getTargetEndpoint();
-			if (endpoint == null || endpoint.isEmpty()) {
-				endpoint = "http://localhost:8080/fhir"; // Default
-			}
-			
 			log.info(">>> Conectando a endpoint FHIR: " + endpoint);
 			IGenericClient client = fhirContext.newRestfulGenericClient(endpoint);
 			
@@ -160,9 +168,16 @@ public class DyakuSenderServiceImpl extends BaseOpenmrsService implements DyakuS
 			
 		} catch (Exception ex) {
 			// Otro tipo de error (payload inválido, error del servidor, etc.)
-			log.error(">>> ERROR AL ENVIAR MENSAJE: " + ex.getMessage(), ex);
+			String errorMsg = ex.getMessage();
+			
+			// Mejorar mensaje de error HTTP 404
+			if (errorMsg != null && errorMsg.contains("HTTP 404")) {
+				errorMsg = "HTTP 404 - El servidor FHIR no está disponible en: " + endpoint + ". Verifica que el servidor esté levantado.";
+			}
+			
+			log.error(">>> ERROR AL ENVIAR MENSAJE: " + errorMsg, ex);
 			item.setStatus("ERROR");
-			item.setErrorMessage("Error: " + ex.getMessage());
+			item.setErrorMessage("Error: " + errorMsg);
 			dao.save(item);
 			return false;
 		}

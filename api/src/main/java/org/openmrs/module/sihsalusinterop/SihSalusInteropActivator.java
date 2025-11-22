@@ -9,7 +9,10 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
+import org.openmrs.scheduler.SchedulerException;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.DatabaseUpdater;
 
 import java.sql.Connection;
@@ -38,6 +41,15 @@ public class SihSalusInteropActivator extends BaseModuleActivator {
 		} catch (Exception e) {
 			log.error("✗ Error al ejecutar Liquibase", e);
 			throw new RuntimeException("Error al inicializar la base de datos del módulo SIH SALUS Interop", e);
+		}
+		
+		try {
+			// Registrar scheduler para procesar cola automáticamente
+			registerScheduler();
+			log.info("✓ Scheduler registrado correctamente");
+		} catch (Exception e) {
+			log.error("✗ Error al registrar scheduler", e);
+			// No lanzar excepción para no impedir el arranque del módulo
 		}
 		
 		log.info("=======================================================");
@@ -108,6 +120,58 @@ public class SihSalusInteropActivator extends BaseModuleActivator {
 					log.warn("Error al cerrar conexión de base de datos", e);
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Registra el scheduler para procesar la cola automáticamente cada 5 minutos
+	 */
+	private void registerScheduler() throws SchedulerException {
+		// Usar método sin importar el tipo específico del servicio
+		Object schedulerService = Context.getSchedulerService();
+		
+		if (schedulerService == null) {
+			log.warn("SchedulerService no disponible. El procesamiento automático de cola no se activará.");
+			log.warn("NOTA: Puedes registrar manualmente la tarea desde la interfaz de administración de OpenMRS");
+			return;
+		}
+		
+		// Usar reflexión para evitar problemas de compilación si el servicio no está disponible
+		try {
+			java.lang.reflect.Method getTaskByName = schedulerService.getClass().getMethod("getTaskByName", String.class);
+			String taskName = "SIH SALUS Interop Queue Processor";
+			TaskDefinition taskDef = (TaskDefinition) getTaskByName.invoke(schedulerService, taskName);
+			
+			if (taskDef == null) {
+				// Crear nueva tarea
+				taskDef = new TaskDefinition();
+				taskDef.setName(taskName);
+				taskDef.setDescription("Procesa automáticamente la cola de mensajes FHIR pendientes cada 5 minutos");
+				taskDef.setTaskClass("org.openmrs.module.sihsalusinterop.api.tasks.QueueProcessorTask");
+				taskDef.setStartOnStartup(true);
+				taskDef.setRepeatInterval(300000L); // 5 minutos = 300,000 ms
+				taskDef.setStartTime(null); // Iniciar inmediatamente
+				
+				java.lang.reflect.Method scheduleTask = schedulerService.getClass().getMethod("scheduleTask", TaskDefinition.class);
+				scheduleTask.invoke(schedulerService, taskDef);
+				log.info("Tarea programada creada: " + taskName);
+			} else {
+				// Verificar si está activa
+				if (!taskDef.getStarted()) {
+					taskDef.setStartOnStartup(true);
+					taskDef.setRepeatInterval(300000L);
+					java.lang.reflect.Method saveTask = schedulerService.getClass().getMethod("saveTaskDefinition", TaskDefinition.class);
+					saveTask.invoke(schedulerService, taskDef);
+					java.lang.reflect.Method scheduleTask = schedulerService.getClass().getMethod("scheduleTask", TaskDefinition.class);
+					scheduleTask.invoke(schedulerService, taskDef);
+					log.info("Tarea programada reactivada: " + taskName);
+				} else {
+					log.info("Tarea programada ya está activa: " + taskName);
+				}
+			}
+		} catch (Exception e) {
+			log.warn("No se pudo registrar el scheduler automáticamente. Error: " + e.getMessage());
+			log.warn("Puedes registrar manualmente la tarea 'QueueProcessorTask' desde la interfaz de administración de OpenMRS");
 		}
 	}
 

@@ -25,10 +25,8 @@
         <property name="dateCreated" type="timestamp" column="date_created" not-null="true"/>
         <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by"/>
         <property name="dateChanged" type="timestamp" column="date_changed"/>
-        <property name="retired" type="boolean" column="retired" not-null="true"/>
-        <many-to-one name="retiredBy" class="org.openmrs.User" column="retired_by"/>
-        <property name="dateRetired" type="timestamp" column="date_retired"/>
-        <property name="retireReason" type="string" column="retire_reason" length="255"/>
+        <!-- Nota: Las propiedades retired, retiredBy, dateRetired, retireReason NO se mapean explícitamente -->
+        <!-- OpenMRS las maneja automáticamente a través de BaseOpenmrsData -->
 
         <!-- Campos Específicos de la Cola de Mensajes -->
         <property name="messageType" type="string" column="message_type" length="50" not-null="true"/>

@@ -43,10 +43,10 @@ public interface DyakuSenderService extends OpenmrsService {
 	 * Procesa la cola de mensajes pendientes
 	 * Envía todos los mensajes con status=PENDING al servidor HAPI FHIR
 	 * 
-	 * @return Número de mensajes enviados exitosamente
+	 * @return Map con "sentCount" (enviados exitosamente) y "processedCount" (total procesados)
 	 */
 	@Authorized({ "Manage Interop Queue" })
-	int processQueue();
+	java.util.Map<String, Integer> processQueue();
 	
 	/**
 	 * Obtiene todos los items de la cola

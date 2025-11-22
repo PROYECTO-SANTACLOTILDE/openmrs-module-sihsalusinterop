@@ -1,0 +1,1354 @@
+{
+  "resourceType": "Bundle",
+  "id": "d22725c4-aa60-4609-afd2-affd3e58b0d9",
+  "meta": {
+    "lastUpdated": "2025-11-18T21:03:46.224+00:00"
+  },
+  "type": "searchset",
+  "total": 11,
+  "link": [ {
+    "relation": "self",
+    "url": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition?_format=json"
+  } ],
+  "entry": [ {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/AlergiaPe",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "AlergiaPe",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/AlergiaPe",
+      "name": "AlergiaPe",
+      "title": "Alergias o Intolerancias Perú",
+      "status": "draft",
+      "description": "Alergias o Intolerancias del paciente",
+      "fhirVersion": "4.0.1",
+      "kind": "resource",
+      "abstract": false,
+      "type": "AllergyIntolerance",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/AllergyIntolerance",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "AllergyIntolerance.type",
+          "path": "AllergyIntolerance.type",
+          "mustSupport": true
+        }, {
+          "id": "AllergyIntolerance.category",
+          "path": "AllergyIntolerance.category",
+          "definition": "Categoria de la alergia o intolerancia detectada.",
+          "min": 1,
+          "max": "1",
+          "mustSupport": true
+        }, {
+          "id": "AllergyIntolerance.criticality",
+          "path": "AllergyIntolerance.criticality",
+          "short": "low (baja) | high (alta) | unable-to-assess (incapaz de evaluar)",
+          "definition": "Grado de criticidad.",
+          "mustSupport": true
+        }, {
+          "id": "AllergyIntolerance.code.text",
+          "path": "AllergyIntolerance.code.text",
+          "short": "Descripción de la alergia o intolerancia.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "AllergyIntolerance.patient",
+          "path": "AllergyIntolerance.patient",
+          "short": "Paciente sobre al que corresponde la alergia.",
+          "definition": "Paciente sobre al que corresponde la alergia.",
+          "type": [ {
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PacientePe" ]
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "AllergyIntolerance.patient.reference",
+          "path": "AllergyIntolerance.patient.reference",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "AllergyIntolerance.onset[x]",
+          "path": "AllergyIntolerance.onset[x]",
+          "slicing": {
+            "discriminator": [ {
+              "type": "type",
+              "path": "$this"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          }
+        }, {
+          "id": "AllergyIntolerance.onset[x]:onsetDateTime",
+          "path": "AllergyIntolerance.onset[x]",
+          "sliceName": "onsetDateTime",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "dateTime"
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "AllergyIntolerance.reaction",
+          "path": "AllergyIntolerance.reaction",
+          "short": "Reacción adversa.",
+          "mustSupport": true
+        }, {
+          "id": "AllergyIntolerance.reaction.description",
+          "path": "AllergyIntolerance.reaction.description",
+          "short": "Descripción de la reacción adversa.",
+          "mustSupport": true
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/BundlePe",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "BundlePe",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/BundlePe",
+      "name": "BundlePe_Documento",
+      "title": "Bundle Perú",
+      "status": "draft",
+      "description": "Estructura de transporte de  Documentos y recursos relacionados.",
+      "fhirVersion": "4.0.1",
+      "kind": "resource",
+      "abstract": false,
+      "type": "Bundle",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Bundle",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "Bundle.identifier",
+          "path": "Bundle.identifier",
+          "mustSupport": true
+        }, {
+          "id": "Bundle.type",
+          "path": "Bundle.type",
+          "patternCode": "document"
+        }, {
+          "id": "Bundle.timestamp",
+          "path": "Bundle.timestamp",
+          "mustSupport": true
+        }, {
+          "id": "Bundle.entry",
+          "path": "Bundle.entry",
+          "slicing": {
+            "discriminator": [ {
+              "type": "profile",
+              "path": "resource"
+            } ],
+            "description": "Corresponde a cada una de las entradas del Bundle.",
+            "rules": "closed"
+          },
+          "min": 3,
+          "mustSupport": true
+        }, {
+          "id": "Bundle.entry.resource",
+          "path": "Bundle.entry.resource",
+          "mustSupport": true
+        }, {
+          "id": "Bundle.entry:Composition",
+          "path": "Bundle.entry",
+          "sliceName": "Composition",
+          "short": "RDA - Composition.",
+          "definition": "Registro Digital de Atención - Composition",
+          "min": 0,
+          "max": "1"
+        }, {
+          "id": "Bundle.entry:Composition.resource",
+          "path": "Bundle.entry.resource",
+          "min": 1,
+          "type": [ {
+            "code": "Composition",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/CompositionPe" ]
+          } ]
+        }, {
+          "id": "Bundle.entry:Condition",
+          "path": "Bundle.entry",
+          "sliceName": "Condition",
+          "short": "Condiciones.",
+          "definition": "Corresponden a los diagnosticos.",
+          "min": 0,
+          "max": "*"
+        }, {
+          "id": "Bundle.entry:Condition.resource",
+          "path": "Bundle.entry.resource",
+          "min": 1,
+          "type": [ {
+            "code": "Condition",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/ConditionPe" ]
+          } ]
+        }, {
+          "id": "Bundle.entry:Alergias",
+          "path": "Bundle.entry",
+          "sliceName": "Alergias",
+          "short": "Alergias/Intolerancias",
+          "definition": "Alergias/Intolerancias.",
+          "min": 0,
+          "max": "*"
+        }, {
+          "id": "Bundle.entry:Alergias.resource",
+          "path": "Bundle.entry.resource",
+          "min": 1,
+          "type": [ {
+            "code": "AllergyIntolerance",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/AlergiaPe" ]
+          } ]
+        }, {
+          "id": "Bundle.entry:Medicaciones",
+          "path": "Bundle.entry",
+          "sliceName": "Medicaciones",
+          "short": "Medicamentos",
+          "definition": "Medicamentos",
+          "min": 0,
+          "max": "*"
+        }, {
+          "id": "Bundle.entry:Medicaciones.resource",
+          "path": "Bundle.entry.resource",
+          "min": 1,
+          "type": [ {
+            "code": "MedicationStatement",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/MedicationStatementPe" ]
+          } ]
+        }, {
+          "id": "Bundle.entry:Patient",
+          "path": "Bundle.entry",
+          "sliceName": "Patient",
+          "short": "Paciente",
+          "definition": "Paciente.",
+          "min": 1,
+          "max": "1"
+        }, {
+          "id": "Bundle.entry:Patient.resource",
+          "path": "Bundle.entry.resource",
+          "min": 1,
+          "type": [ {
+            "code": "Patient",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PacientePe" ]
+          } ]
+        }, {
+          "id": "Bundle.entry:Organizacion",
+          "path": "Bundle.entry",
+          "sliceName": "Organizacion",
+          "short": "Establecimiento",
+          "definition": "Establecimiento.",
+          "min": 1,
+          "max": "1"
+        }, {
+          "id": "Bundle.entry:Organizacion.resource",
+          "path": "Bundle.entry.resource",
+          "min": 1,
+          "type": [ {
+            "code": "Organization",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/OrganizacionPe" ]
+          } ]
+        }, {
+          "id": "Bundle.entry:Profesional",
+          "path": "Bundle.entry",
+          "sliceName": "Profesional",
+          "short": "Profesional",
+          "definition": "Profesional.",
+          "min": 1,
+          "max": "1"
+        }, {
+          "id": "Bundle.entry:Profesional.resource",
+          "path": "Bundle.entry.resource",
+          "min": 1,
+          "type": [ {
+            "code": "Practitioner",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PractitionerPe" ]
+          } ]
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/CompositionPe",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "CompositionPe",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/CompositionPe",
+      "name": "CompositionPe",
+      "title": "Documento Clinico Perú",
+      "status": "draft",
+      "description": "Información Clínica Básica - IPS Perú",
+      "fhirVersion": "4.0.1",
+      "kind": "resource",
+      "abstract": false,
+      "type": "Composition",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Composition",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "Composition.status",
+          "path": "Composition.status",
+          "short": "Estado valor fijo: -final-",
+          "definition": "Corresponde al estado del documento.",
+          "mustSupport": true
+        }, {
+          "id": "Composition.type",
+          "path": "Composition.type",
+          "short": "Tipo de Documento",
+          "definition": "Especifica el tipo de documento que se ha generado",
+          "mustSupport": true,
+          "binding": {
+            "strength": "preferred",
+            "valueSet": "http://hl7.org/fhir/ValueSet/doc-typecodes"
+          }
+        }, {
+          "id": "Composition.subject",
+          "path": "Composition.subject",
+          "short": "PENDIENTE",
+          "definition": "PENDIENTE.",
+          "min": 1,
+          "type": [ {
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PacientePe" ]
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "Composition.subject.reference",
+          "path": "Composition.subject.reference",
+          "short": "Corresponde al paciente",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Composition.date",
+          "path": "Composition.date",
+          "short": "Fecha de creación del documento",
+          "definition": "Fecha de creación del documento",
+          "mustSupport": true
+        }, {
+          "id": "Composition.author",
+          "path": "Composition.author",
+          "short": "Quien Ha creado el documento",
+          "definition": "Identifica al responsable de los datos ingresados al documento.",
+          "max": "1",
+          "type": [ {
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PractitionerPe" ]
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "Composition.title",
+          "path": "Composition.title",
+          "short": "Título del documento generado",
+          "definition": "PENDIENTE",
+          "mustSupport": true
+        }, {
+          "id": "Composition.custodian",
+          "path": "Composition.custodian",
+          "short": "ESTABLECIMIENTO?.",
+          "definition": "ESTABLECIMIENTO?",
+          "min": 1,
+          "type": [ {
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/OrganizacionPe" ]
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "Composition.section",
+          "path": "Composition.section",
+          "slicing": {
+            "discriminator": [ {
+              "type": "pattern",
+              "path": "code"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          },
+          "short": "Sección del documento",
+          "definition": "Sección de notificación de datos clínicos.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Composition.section.code",
+          "path": "Composition.section.code",
+          "min": 1,
+          "mustSupport": true,
+          "binding": {
+            "strength": "example",
+            "valueSet": "http://hl7.org/fhir/ValueSet/doc-section-codes"
+          }
+        }, {
+          "id": "Composition.section:sectionDiagnosticos",
+          "path": "Composition.section",
+          "sliceName": "sectionDiagnosticos",
+          "short": "Sección Diagnósticos",
+          "definition": "Descripción de lista de diagnósticos determinados en el paciente.",
+          "min": 0,
+          "max": "*",
+          "mustSupport": true
+        }, {
+          "id": "Composition.section:sectionDiagnosticos.title",
+          "path": "Composition.section.title",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Composition.section:sectionDiagnosticos.code",
+          "path": "Composition.section.code",
+          "patternCodeableConcept": {
+            "coding": [ {
+              "system": "http://loinc.org",
+              "code": "11450-4"
+            } ]
+          }
+        }, {
+          "id": "Composition.section:sectionDiagnosticos.entry",
+          "path": "Composition.section.entry",
+          "slicing": {
+            "discriminator": [ {
+              "type": "profile",
+              "path": "resolve()"
+            } ],
+            "rules": "open"
+          },
+          "short": "Diagnósticos conocidos actualmente de relevancia para determinaciones clínicas en el paciente.",
+          "min": 1,
+          "type": [ {
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/ConditionPe" ]
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "Composition.section:sectionMedicacion",
+          "path": "Composition.section",
+          "sliceName": "sectionMedicacion",
+          "short": "Sección Medicacion",
+          "definition": "Descripción de lista de medicacion del paciente.",
+          "min": 0,
+          "max": "*",
+          "mustSupport": true
+        }, {
+          "id": "Composition.section:sectionMedicacion.title",
+          "path": "Composition.section.title",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Composition.section:sectionMedicacion.code",
+          "path": "Composition.section.code",
+          "patternCodeableConcept": {
+            "coding": [ {
+              "system": "http://loinc.org",
+              "code": "10160-0"
+            } ]
+          }
+        }, {
+          "id": "Composition.section:sectionMedicacion.entry",
+          "path": "Composition.section.entry",
+          "slicing": {
+            "discriminator": [ {
+              "type": "profile",
+              "path": "resolve()"
+            } ],
+            "rules": "open"
+          },
+          "short": "Medicación del paciente.",
+          "min": 1,
+          "type": [ {
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/MedicationStatementPe" ]
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "Composition.section:sectionAlergias",
+          "path": "Composition.section",
+          "sliceName": "sectionAlergias",
+          "short": "Sección Alergias",
+          "definition": "Descripción de lista de alergias conocidas del paciente.",
+          "min": 0,
+          "max": "*",
+          "mustSupport": true
+        }, {
+          "id": "Composition.section:sectionAlergias.title",
+          "path": "Composition.section.title",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Composition.section:sectionAlergias.code",
+          "path": "Composition.section.code",
+          "patternCodeableConcept": {
+            "coding": [ {
+              "system": "http://loinc.org",
+              "code": "48765-2"
+            } ]
+          }
+        }, {
+          "id": "Composition.section:sectionAlergias.entry",
+          "path": "Composition.section.entry",
+          "slicing": {
+            "discriminator": [ {
+              "type": "profile",
+              "path": "resolve()"
+            } ],
+            "rules": "open"
+          },
+          "short": "Alergias del paciente.",
+          "min": 1,
+          "type": [ {
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/AlergiaPe" ]
+          } ],
+          "mustSupport": true
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/ConditionPe",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "ConditionPe",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/ConditionPe",
+      "name": "ConditionPe",
+      "title": "Condition_Perú",
+      "status": "draft",
+      "description": "Condición del paciente",
+      "fhirVersion": "4.0.1",
+      "kind": "resource",
+      "abstract": false,
+      "type": "Condition",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Condition",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "Condition.verificationStatus",
+          "path": "Condition.verificationStatus",
+          "mustSupport": true
+        }, {
+          "id": "Condition.code.coding.system",
+          "path": "Condition.code.coding.system",
+          "min": 1,
+          "patternUri": "http://hl7.org/fhir/sid/icd-10"
+        }, {
+          "id": "Condition.code.coding.code",
+          "path": "Condition.code.coding.code",
+          "min": 1,
+          "binding": {
+            "strength": "preferred",
+            "valueSet": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/CIE10VS"
+          }
+        }, {
+          "id": "Condition.code.coding.display",
+          "path": "Condition.code.coding.display",
+          "min": 1
+        }, {
+          "id": "Condition.code.text",
+          "path": "Condition.code.text",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Condition.subject",
+          "path": "Condition.subject",
+          "short": "Paciente sobre al que corresponde la condición.",
+          "definition": "Paciente sobre al que corresponde la condición.",
+          "type": [ {
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PacientePe" ]
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "Condition.subject.reference",
+          "path": "Condition.subject.reference",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Condition.onset[x]",
+          "path": "Condition.onset[x]",
+          "slicing": {
+            "discriminator": [ {
+              "type": "type",
+              "path": "$this"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          }
+        }, {
+          "id": "Condition.onset[x]:onsetPeriod",
+          "path": "Condition.onset[x]",
+          "sliceName": "onsetPeriod",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "Period"
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "Condition.onset[x]:onsetPeriod.start",
+          "path": "Condition.onset[x].start",
+          "mustSupport": true
+        }, {
+          "id": "Condition.onset[x]:onsetPeriod.end",
+          "path": "Condition.onset[x].end",
+          "mustSupport": true
+        }, {
+          "id": "Condition.note",
+          "path": "Condition.note",
+          "short": "Observaciones/anotaciones complementarias.",
+          "definition": "Observaciones/anotaciones complementarias",
+          "mustSupport": true
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/MedicationStatementPe",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "MedicationStatementPe",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/MedicationStatementPe",
+      "name": "MedicationStatementPe",
+      "title": "Medication Pe",
+      "status": "draft",
+      "description": "Medicación del paciente",
+      "fhirVersion": "4.0.1",
+      "kind": "resource",
+      "abstract": false,
+      "type": "MedicationStatement",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/MedicationStatement",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "MedicationStatement.status",
+          "path": "MedicationStatement.status",
+          "mustSupport": true
+        }, {
+          "id": "MedicationStatement.medication[x]",
+          "path": "MedicationStatement.medication[x]",
+          "slicing": {
+            "discriminator": [ {
+              "type": "type",
+              "path": "$this"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          }
+        }, {
+          "id": "MedicationStatement.medication[x]:medicationCodeableConcept",
+          "path": "MedicationStatement.medication[x]",
+          "sliceName": "medicationCodeableConcept",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "CodeableConcept"
+          } ]
+        }, {
+          "id": "MedicationStatement.medication[x]:medicationCodeableConcept.text",
+          "path": "MedicationStatement.medication[x].text",
+          "short": "Denominación de productos farmacéuticos (Nombre de medicamentos coherentes y concordante).",
+          "mustSupport": true
+        }, {
+          "id": "MedicationStatement.subject",
+          "path": "MedicationStatement.subject",
+          "short": "Paciente sobre al que corresponde la Medicacion.",
+          "definition": "Paciente sobre al que corresponde la Medicacion.",
+          "type": [ {
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PacientePe" ]
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "MedicationStatement.subject.reference",
+          "path": "MedicationStatement.subject.reference",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "MedicationStatement.effective[x]",
+          "path": "MedicationStatement.effective[x]",
+          "slicing": {
+            "discriminator": [ {
+              "type": "type",
+              "path": "$this"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          }
+        }, {
+          "id": "MedicationStatement.effective[x]:effectiveDateTime",
+          "path": "MedicationStatement.effective[x]",
+          "sliceName": "effectiveDateTime",
+          "short": "Fecha de prescripción.",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "dateTime"
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "MedicationStatement.dosage",
+          "path": "MedicationStatement.dosage",
+          "mustSupport": true
+        }, {
+          "id": "MedicationStatement.dosage.text",
+          "path": "MedicationStatement.dosage.text",
+          "short": "Dosis del medicamento.",
+          "mustSupport": true
+        }, {
+          "id": "MedicationStatement.dosage.route.text",
+          "path": "MedicationStatement.dosage.route.text",
+          "short": "Vía de administración.",
+          "mustSupport": true
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/OrganizacionPe",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "OrganizacionPe",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/OrganizacionPe",
+      "name": "OrganizacionPe",
+      "title": "Organizacion Perú",
+      "status": "draft",
+      "description": "Organización de Salud, Institución Prestadora de Servicios de Salud - IPRESS de Perú.",
+      "fhirVersion": "4.0.1",
+      "kind": "resource",
+      "abstract": false,
+      "type": "Organization",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Organization",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "Organization.identifier",
+          "path": "Organization.identifier",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Organization.identifier.type",
+          "path": "Organization.identifier.type",
+          "short": "Tipo de indentificación."
+        }, {
+          "id": "Organization.identifier.type.coding",
+          "path": "Organization.identifier.type.coding",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Organization.identifier.type.coding.code",
+          "path": "Organization.identifier.type.coding.code",
+          "min": 1,
+          "mustSupport": true,
+          "binding": {
+            "strength": "required",
+            "valueSet": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/IPRESSVS"
+          }
+        }, {
+          "id": "Organization.identifier.value",
+          "path": "Organization.identifier.value",
+          "short": "Número que indica la identificación.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Organization.active",
+          "path": "Organization.active",
+          "short": "Estado de si es una Organización Validada o no (true|false)",
+          "definition": "Indicador si una organización sigue vigente en su rol dentro del sistema de salud",
+          "min": 1
+        }, {
+          "id": "Organization.type",
+          "path": "Organization.type",
+          "short": "Indica el tipo de la organización. ",
+          "definition": "Indica el tipo de la organización.",
+          "mustSupport": true
+        }, {
+          "id": "Organization.name",
+          "path": "Organization.name",
+          "short": "Nombre asignado al administrador del plan de beneficios en el SGSSS",
+          "definition": "Nombre de la Organización",
+          "mustSupport": true
+        }, {
+          "id": "Organization.address.extension:ubigeo",
+          "path": "Organization.address.extension",
+          "sliceName": "ubigeo",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "Extension",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-ubigeo" ]
+          } ]
+        }, {
+          "id": "Organization.partOf",
+          "path": "Organization.partOf",
+          "short": "Para los establecimientos de Salud, representa a la DISA que pertenece",
+          "definition": " . . .",
+          "type": [ {
+            "extension": [ {
+              "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-hierarchy",
+              "valueBoolean": true
+            } ],
+            "code": "Reference",
+            "targetProfile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/OrganizacionPe" ]
+          } ],
+          "mustSupport": true
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/PacientePe",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "PacientePe",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PacientePe",
+      "name": "PacientePe",
+      "title": "Paciente Perú",
+      "status": "draft",
+      "description": "En esta sección se presentará un resumen de la  información relacionada con el paciente, incluyendo \ntanto datos de identificación como datos personales de salud recopilados durante la ejecución de actos médicos y \nactos de salud. La misma fue obtenida del conjunto de variables que forman parte del resumen a enviar al RENHICE y luego modelada de acuerdo al recurso Patient de FHIR.",
+      "fhirVersion": "4.0.1",
+      "kind": "resource",
+      "abstract": false,
+      "type": "Patient",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Patient",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "Patient.identifier",
+          "path": "Patient.identifier",
+          "short": "Identificación del paciente.",
+          "definition": "Elemento de dato que contiene el nombre y número de identificación de una determinada persona \npara efectos de identidad e individualización.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Patient.identifier.type",
+          "path": "Patient.identifier.type",
+          "short": "Tipo de indentificación.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Patient.identifier.type.extension",
+          "path": "Patient.identifier.type.extension",
+          "short": "Extension para representar pais del documento.",
+          "definition": "Se usa esta extensión para agregarle al tipo de documento el país de origen de este",
+          "min": 1
+        }, {
+          "id": "Patient.identifier.type.extension:pais_emisor",
+          "path": "Patient.identifier.type.extension",
+          "sliceName": "pais_emisor",
+          "min": 1,
+          "max": "1",
+          "type": [ {
+            "code": "Extension",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-pais" ]
+          } ]
+        }, {
+          "id": "Patient.identifier.type.coding",
+          "path": "Patient.identifier.type.coding",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Patient.identifier.type.coding.code",
+          "path": "Patient.identifier.type.coding.code",
+          "min": 1,
+          "mustSupport": true,
+          "binding": {
+            "strength": "required",
+            "valueSet": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/IdentificadoresPersonaVS"
+          }
+        }, {
+          "id": "Patient.identifier.value",
+          "path": "Patient.identifier.value",
+          "short": "Número que indica la identificación.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Patient.name",
+          "path": "Patient.name",
+          "short": "Nombres y Apellidos del Paciente.",
+          "definition": "Nombre patronímico que aparece en el documento de identidad.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Patient.name.family",
+          "path": "Patient.name.family",
+          "short": "Apellidos del usuario de salud/ paciente.",
+          "definition": "Denominación deapellido tal y como lo muestra la consulta a base de datos oficiales sea RENIEC, Migraciones o Ministerio de Relaciones Exteriores a partir del documento de identidad.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Patient.name.family.extension",
+          "path": "Patient.name.family.extension",
+          "slicing": {
+            "discriminator": [ {
+              "type": "value",
+              "path": "url"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          },
+          "short": "Tercer Apellido"
+        }, {
+          "id": "Patient.name.family.extension:SegundoApellido",
+          "path": "Patient.name.family.extension",
+          "sliceName": "SegundoApellido",
+          "min": 0,
+          "max": "*",
+          "type": [ {
+            "code": "Extension",
+            "profile": [ "http://hl7.org/fhir/StructureDefinition/humanname-mothers-family" ]
+          } ]
+        }, {
+          "id": "Patient.name.family.extension:TercerApellido",
+          "path": "Patient.name.family.extension",
+          "sliceName": "TercerApellido",
+          "min": 0,
+          "max": "*",
+          "type": [ {
+            "code": "Extension",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-tercerapellido" ]
+          } ]
+        }, {
+          "id": "Patient.name.given",
+          "path": "Patient.name.given",
+          "short": "Nombres del paciente.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Patient.telecom",
+          "path": "Patient.telecom",
+          "slicing": {
+            "discriminator": [ {
+              "type": "value",
+              "path": "system"
+            } ],
+            "description": "Detalle de email y tel",
+            "ordered": false,
+            "rules": "open"
+          },
+          "mustSupport": true
+        }, {
+          "id": "Patient.telecom:email",
+          "path": "Patient.telecom",
+          "sliceName": "email",
+          "min": 0,
+          "max": "*"
+        }, {
+          "id": "Patient.telecom:email.system",
+          "path": "Patient.telecom.system",
+          "min": 1,
+          "patternCode": "email"
+        }, {
+          "id": "Patient.telecom:email.value",
+          "path": "Patient.telecom.value",
+          "mustSupport": true
+        }, {
+          "id": "Patient.telecom:tel",
+          "path": "Patient.telecom",
+          "sliceName": "tel",
+          "min": 0,
+          "max": "*"
+        }, {
+          "id": "Patient.telecom:tel.system",
+          "path": "Patient.telecom.system",
+          "min": 1,
+          "patternCode": "phone"
+        }, {
+          "id": "Patient.telecom:tel.value",
+          "path": "Patient.telecom.value",
+          "mustSupport": true
+        }, {
+          "id": "Patient.gender",
+          "path": "Patient.gender",
+          "short": "Sexo de nacimiento: male | female | other | unknown (requerido)",
+          "definition": "Identificador para determinar las características genéticas, endocrinas y morfológicas del cuerpo al nacer.",
+          "min": 1,
+          "mustSupport": true,
+          "binding": {
+            "strength": "required",
+            "valueSet": "http://hl7.org/fhir/ValueSet/administrative-gender"
+          }
+        }, {
+          "id": "Patient.birthDate",
+          "path": "Patient.birthDate",
+          "short": "Fecha de Nacimiento, formato: YYYY-MM-DD",
+          "definition": "Fecha en que nació la persona y que se encuentra en el documento de \nidentidad o que declare el individuo.",
+          "min": 1
+        }, {
+          "id": "Patient.birthDate.extension",
+          "path": "Patient.birthDate.extension",
+          "slicing": {
+            "discriminator": [ {
+              "type": "value",
+              "path": "url"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          },
+          "short": "Extension para lugar de nacimiento, incluye país."
+        }, {
+          "id": "Patient.birthDate.extension:lugarNacimientoPais",
+          "path": "Patient.birthDate.extension",
+          "sliceName": "lugarNacimientoPais",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "Extension",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-pais" ]
+          } ],
+          "mustSupport": true
+        }, {
+          "id": "Patient.birthDate.extension:lugarNacimientoUbigeo",
+          "path": "Patient.birthDate.extension",
+          "sliceName": "lugarNacimientoUbigeo",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "Extension",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-ubigeo" ]
+          } ],
+          "mustSupport": true
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/pe-pais",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "pe-pais",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-pais",
+      "name": "Pais",
+      "status": "draft",
+      "description": "Extensión utilizada para representar Nacionalidad o Pais de origen del documento.",
+      "fhirVersion": "4.0.1",
+      "kind": "complex-type",
+      "abstract": false,
+      "context": [ {
+        "type": "element",
+        "expression": "Element"
+      } ],
+      "type": "Extension",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Extension",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "Extension",
+          "path": "Extension",
+          "definition": "Extensión utilizada para representar Nacionalidad o Pais de origen del documento."
+        }, {
+          "id": "Extension.extension",
+          "path": "Extension.extension",
+          "max": "0"
+        }, {
+          "id": "Extension.url",
+          "path": "Extension.url",
+          "fixedUri": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-pais"
+        }, {
+          "id": "Extension.value[x]",
+          "path": "Extension.value[x]",
+          "slicing": {
+            "discriminator": [ {
+              "type": "type",
+              "path": "$this"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          }
+        }, {
+          "id": "Extension.value[x]:valueCodeableConcept",
+          "path": "Extension.value[x]",
+          "sliceName": "valueCodeableConcept",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "CodeableConcept"
+          } ],
+          "binding": {
+            "strength": "required",
+            "valueSet": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/PaisesVS"
+          }
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/pe-tercerapellido",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "pe-tercerapellido",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-tercerapellido",
+      "name": "TercerApellido",
+      "status": "draft",
+      "description": "tercer apellido.",
+      "fhirVersion": "4.0.1",
+      "kind": "complex-type",
+      "abstract": false,
+      "context": [ {
+        "type": "element",
+        "expression": "Element"
+      } ],
+      "type": "Extension",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Extension",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "Extension",
+          "path": "Extension",
+          "definition": "tercer apellido."
+        }, {
+          "id": "Extension.extension",
+          "path": "Extension.extension",
+          "max": "0"
+        }, {
+          "id": "Extension.url",
+          "path": "Extension.url",
+          "fixedUri": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-tercerapellido"
+        }, {
+          "id": "Extension.value[x]",
+          "path": "Extension.value[x]",
+          "slicing": {
+            "discriminator": [ {
+              "type": "type",
+              "path": "$this"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          }
+        }, {
+          "id": "Extension.value[x]:valueString",
+          "path": "Extension.value[x]",
+          "sliceName": "valueString",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "string"
+          } ]
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/pe-ubigeo",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "pe-ubigeo",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-ubigeo",
+      "name": "LugarDeNacimientoUbigeo",
+      "status": "draft",
+      "description": "UBIGEO NACIMIENTO.",
+      "fhirVersion": "4.0.1",
+      "kind": "complex-type",
+      "abstract": false,
+      "context": [ {
+        "type": "element",
+        "expression": "Element"
+      } ],
+      "type": "Extension",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Extension",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "Extension",
+          "path": "Extension",
+          "definition": "UBIGEO NACIMIENTO."
+        }, {
+          "id": "Extension.extension",
+          "path": "Extension.extension",
+          "max": "0"
+        }, {
+          "id": "Extension.url",
+          "path": "Extension.url",
+          "fixedUri": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-ubigeo"
+        }, {
+          "id": "Extension.value[x]",
+          "path": "Extension.value[x]",
+          "slicing": {
+            "discriminator": [ {
+              "type": "type",
+              "path": "$this"
+            } ],
+            "ordered": false,
+            "rules": "open"
+          }
+        }, {
+          "id": "Extension.value[x]:valueString",
+          "path": "Extension.value[x]",
+          "sliceName": "valueString",
+          "min": 0,
+          "max": "1",
+          "type": [ {
+            "code": "string"
+          } ]
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  }, {
+    "fullUrl": "http://dyaku.minsa.gob.pe/fhir/StructureDefinition/PractitionerPe",
+    "resource": {
+      "resourceType": "StructureDefinition",
+      "id": "PractitionerPe",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2025-06-17T14:28:30.789+00:00",
+        "source": "#QuTrcFqUhQaA6eMJ"
+      },
+      "url": "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PractitionerPe",
+      "name": "ProfesionalPe",
+      "title": "Profesional Perú",
+      "status": "draft",
+      "description": "Profesional de Salud Perú.",
+      "fhirVersion": "4.0.1",
+      "kind": "resource",
+      "abstract": false,
+      "type": "Practitioner",
+      "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Practitioner",
+      "derivation": "constraint",
+      "differential": {
+        "element": [ {
+          "id": "Practitioner.identifier",
+          "path": "Practitioner.identifier",
+          "short": "Identificación del paciente.",
+          "definition": "Elemento de dato que contiene el nombre y número de identificación de una determinada persona \npara efectos de identidad e individualización.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Practitioner.identifier.type",
+          "path": "Practitioner.identifier.type",
+          "short": "Tipo de indentificación.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Practitioner.identifier.type.extension",
+          "path": "Practitioner.identifier.type.extension",
+          "short": "Extension para representar pais del documento.",
+          "definition": "Se usa esta extensión para agregarle al tipo de documento el país de origen de este",
+          "min": 1
+        }, {
+          "id": "Practitioner.identifier.type.extension:pais_emisor",
+          "path": "Practitioner.identifier.type.extension",
+          "sliceName": "pais_emisor",
+          "min": 1,
+          "max": "1",
+          "type": [ {
+            "code": "Extension",
+            "profile": [ "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-pais" ]
+          } ]
+        }, {
+          "id": "Practitioner.identifier.type.coding",
+          "path": "Practitioner.identifier.type.coding",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Practitioner.identifier.type.coding.code",
+          "path": "Practitioner.identifier.type.coding.code",
+          "min": 1,
+          "mustSupport": true,
+          "binding": {
+            "strength": "required",
+            "valueSet": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/IdentificadoresPersonaVS"
+          }
+        }, {
+          "id": "Practitioner.identifier.value",
+          "path": "Practitioner.identifier.value",
+          "short": "Número que indica la identificación.",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Practitioner.name",
+          "path": "Practitioner.name",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Practitioner.name.family",
+          "path": "Practitioner.name.family",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Practitioner.name.given",
+          "path": "Practitioner.name.given",
+          "mustSupport": true
+        }, {
+          "id": "Practitioner.qualification",
+          "path": "Practitioner.qualification",
+          "short": "Representa los colegios médicos.",
+          "mustSupport": true
+        }, {
+          "id": "Practitioner.qualification.identifier.value",
+          "path": "Practitioner.qualification.identifier.value",
+          "min": 1,
+          "mustSupport": true
+        }, {
+          "id": "Practitioner.qualification.code.coding.code",
+          "path": "Practitioner.qualification.code.coding.code",
+          "binding": {
+            "strength": "required",
+            "valueSet": "https://www.gob.pe/minsa/RENHICE/fhir/ValueSet/ColegiosProfesionalesSaludVS"
+          }
+        } ]
+      }
+    },
+    "search": {
+      "mode": "match"
+    }
+  } ]
+}

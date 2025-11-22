@@ -18,6 +18,14 @@
 
     <!-- Activar anotaciones transaccionales -->
     <tx:annotation-driven transaction-manager="transactionManager"/>
+    
+    <!-- ============================================================ -->
+    <!-- FHIR CONTEXT BEAN (Para compatibilidad con módulo FHIR2)   -->
+    <!-- ============================================================ -->
+    
+    <!-- Bean FhirContext R4 - Requerido por el módulo FHIR2 -->
+    <!-- Este bean debe estar disponible antes de que FHIR2 se cargue -->
+    <bean id="fhirR4" class="ca.uhn.fhir.context.FhirContext" factory-method="forR4" scope="singleton"/>
 
     <!-- Escanear componentes en el paquete api -->
     <context:component-scan base-package="org.openmrs.module.sihsalusinterop.api" />
@@ -38,10 +46,13 @@
 
     <!-- DyakuSenderService - Servicio principal de interoperabilidad FHIR -->
     <bean id="sihsalusinterop.DyakuSenderService" 
-          class="org.openmrs.module.sihsalusinterop.api.impl.DyakuSenderServiceImpl"
-          parent="serviceContext">
+          class="org.openmrs.module.sihsalusinterop.api.impl.DyakuSenderServiceImpl">
         <property name="dao" ref="sihsalusinterop.InteropQueueDao"/>
     </bean>
+
+    <!-- BundleBuilderService - Servicio para construir Bundles FHIR según perfil BundlePe -->
+    <bean id="sihsalusinterop.BundleBuilderService" 
+          class="org.openmrs.module.sihsalusinterop.api.service.BundleBuilderService"/>
 
     <!-- ============================================================ -->
     <!-- EXPONER SERVICIOS A LA API DE OPENMRS                       -->

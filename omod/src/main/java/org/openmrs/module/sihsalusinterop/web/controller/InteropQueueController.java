@@ -116,11 +116,14 @@ public class InteropQueueController {
 			DyakuSenderService service = Context.getService(DyakuSenderService.class);
 			
 			// Procesar todos los mensajes pendientes
-			int sentCount = service.processQueue();
+			java.util.Map<String, Integer> result = service.processQueue();
+			int sentCount = result.getOrDefault("sentCount", 0);
+			int processedCount = result.getOrDefault("processedCount", 0);
 			
 			response.put("success", true);
-			response.put("message", "Cola procesada exitosamente");
+			response.put("message", "Se procesaron " + processedCount + " mensajes. " + sentCount + " enviados exitosamente.");
 			response.put("sentCount", sentCount);
+			response.put("processedCount", processedCount);
 			
 			log.info("✓ API: Cola procesada - " + sentCount + " mensajes enviados");
 			

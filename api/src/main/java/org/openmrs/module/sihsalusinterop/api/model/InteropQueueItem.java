@@ -11,7 +11,6 @@ package org.openmrs.module.sihsalusinterop.api.model;
 
 import org.openmrs.BaseOpenmrsData;
 
-import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -27,84 +26,63 @@ import java.util.Date;
  * - ERROR: Error al enviar (se reintentará)
  * - FAILED: Error permanente (agotados reintentos)
  */
-@Entity
-@Table(name = "sihsalus_interop_queue")
 public class InteropQueueItem extends BaseOpenmrsData {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "queue_id")
 	private Integer queueId;
 	
 	/**
 	 * Tipo de mensaje: "FHIR_BUNDLE" o "FUA_DOCUMENT"
 	 */
-	@Column(name = "message_type", nullable = false, length = 50)
 	private String messageType;
 	
 	/**
 	 * Payload del mensaje (JSON o XML serializado)
 	 */
-	@Lob
-	@Column(name = "payload", nullable = false, columnDefinition = "TEXT")
 	private String payload;
 	
 	/**
 	 * Estado actual: PENDING, PROCESSING, SENT, ERROR, FAILED
 	 */
-	@Column(name = "status", nullable = false, length = 20)
 	private String status = "PENDING";
 	
 	/**
 	 * Número de intentos de envío realizados
 	 */
-	@Column(name = "attempts", nullable = false)
 	private Integer attempts = 0;
 	
 	/**
 	 * Máximo número de reintentos permitidos (default: 5)
 	 */
-	@Column(name = "max_attempts", nullable = false)
 	private Integer maxAttempts = 5;
 	
 	/**
 	 * Fecha/hora de creación del item en la cola
 	 */
-	@Column(name = "queued_at", nullable = false)
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date queuedAt = new Date();
 	
 	/**
 	 * Fecha/hora del último intento de envío
 	 */
-	@Column(name = "last_attempt_at")
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastAttemptAt;
 	
 	/**
 	 * Fecha/hora de envío exitoso
 	 */
-	@Column(name = "sent_at")
-	@Temporal(TemporalType.TIMESTAMP)
 	private Date sentAt;
 	
 	/**
 	 * Mensaje de error del último intento (si aplica)
 	 */
-	@Lob
-	@Column(name = "error_message", columnDefinition = "TEXT")
 	private String errorMessage;
 	
 	/**
 	 * URL del endpoint de destino (ej: http://localhost:8080/fhir)
 	 */
-	@Column(name = "target_endpoint", length = 500)
 	private String targetEndpoint;
 	
 	/**
 	 * ID del recurso en el sistema externo (después de enviado)
 	 */
-	@Column(name = "external_resource_id", length = 255)
 	private String externalResourceId;
 	
 	// ============================================================

@@ -20,127 +20,96 @@
     </properties>
 
     <dependencies>
+        <!-- ========================================== -->
+        <!-- OPENMRS CORE (CRÍTICO: SCOPE PROVIDED)     -->
+        <!-- ========================================== -->
         <dependency>
             <groupId>org.openmrs.api</groupId>
             <artifactId>openmrs-api</artifactId>
             <type>jar</type>
-            <scope>provided</scope>
+            <scope>provided</scope> <!-- ¡ESTO EVITA EL ERROR OptionsForm! -->
         </dependency>
 
+        <!-- ========================================== -->
+        <!-- HAPI FHIR (CON EXCLUSIONES TOTALES)        -->
+        <!-- ========================================== -->
+
+        <!-- 1. CLIENTE -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-client</artifactId>
             <version>${hapiFhirVersion}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.module</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
+                <exclusion><groupId>org.slf4j</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>ch.qos.logback</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>com.fasterxml.jackson.core</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>com.fasterxml.jackson.module</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>javassist</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>org.javassist</groupId><artifactId>*</artifactId></exclusion>
             </exclusions>
         </dependency>
 
+        <!-- 2. ESTRUCTURAS R4 -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-r4</artifactId>
             <version>${hapiFhirVersion}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.module</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.datatype</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
+                <exclusion><groupId>org.slf4j</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>ch.qos.logback</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>com.fasterxml.jackson.core</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>com.fasterxml.jackson.module</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>com.fasterxml.jackson.datatype</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>javassist</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>org.javassist</groupId><artifactId>*</artifactId></exclusion>
             </exclusions>
         </dependency>
 
+        <!-- 3. ESTRUCTURAS DSTU3 (PARCHE COMPATIBILIDAD) -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-dstu3</artifactId>
             <version>${hapiFhirVersion}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.module</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
+                <exclusion><groupId>org.slf4j</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>ch.qos.logback</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>com.fasterxml.jackson.core</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>com.fasterxml.jackson.module</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>javassist</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>org.javassist</groupId><artifactId>*</artifactId></exclusion>
             </exclusions>
         </dependency>
 
+        <!-- 4. BASE -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-base</artifactId>
             <version>${hapiFhirVersion}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.module</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
+                <exclusion><groupId>org.slf4j</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>ch.qos.logback</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>com.fasterxml.jackson.core</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>com.fasterxml.jackson.module</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>javassist</groupId><artifactId>*</artifactId></exclusion>
+                <exclusion><groupId>org.javassist</groupId><artifactId>*</artifactId></exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- JACKSON (PARA PRUEBAS MANUALES)            -->
+        <!-- Necesario para serialización JSON FHIR    -->
+        <!-- ========================================== -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.13.0</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
@@ -154,6 +123,17 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                </configuration>
+            </plugin>
+            <!-- Plugin para ejecutar la clase ManualTester -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>org.openmrs.module.sihsalusinterop.ManualTester</mainClass>
+                    <classpathScope>test</classpathScope>
+                    <includePluginDependencies>true</includePluginDependencies>
                 </configuration>
             </plugin>
         </plugins>

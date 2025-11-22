@@ -26,4 +26,12 @@
     <!-- ============================================================ -->
 
 	<context:component-scan base-package="org.openmrs.module.sihsalusinterop.web.controller" />
+	
+	<!-- ============================================================ -->
+	<!-- FHIR CONTEXT BEAN (Para compatibilidad con módulo FHIR2)   -->
+	<!-- Registrado también en el contexto web                      -->
+	<!-- ============================================================ -->
+	
+	<!-- Bean FhirContext R4 - Requerido por el módulo FHIR2 en el contexto web -->
+	<bean id="fhirR4" class="ca.uhn.fhir.context.FhirContext" factory-method="forR4" scope="singleton"/>
 </beans>
