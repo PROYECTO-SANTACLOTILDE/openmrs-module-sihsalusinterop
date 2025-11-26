@@ -37,6 +37,12 @@ public class DyakuPractitionerMapper {
 	public static final String EXT_PAIS_EMISOR = "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-pais";
 	
 	/**
+	 * OID del DNI RENIEC - Registro Nacional de Identificación y Estado Civil Según estándar
+	 * nacional peruano
+	 */
+	public static final String OID_DNI_RENIEC = "urn:oid:2.16.840.1.113883.4.904";
+	
+	/**
 	 * Convierte un User de OpenMRS a Practitioner FHIR R4 (Perfil PractitionerPe)
 	 */
 	public static Practitioner toDyakuFhir(User user) {
@@ -90,12 +96,17 @@ public class DyakuPractitionerMapper {
 		if (dniAttr != null && dniAttr.getValue() != null) {
 			Identifier identifier = new Identifier();
 			
-			// Tipo de identificador (DNI)
+			// System: OID de RENIEC para el identificador DNI
+			identifier.setSystem(OID_DNI_RENIEC);
+			identifier.setValue(dniAttr.getValue());
+			identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
+			
+			// Tipo de identificador (DNI) según CodeSystem peruano IdspersonaPeru
 			CodeableConcept type = new CodeableConcept();
 			type.addCoding()
 				.setSystem(CS_IDENTIFICADORES_PERSONA)
 				.setCode(CODE_DNI)
-				.setDisplay("DNI");
+				.setDisplay("DNI - Documento Nacional de Identidad");
 			identifier.setType(type);
 			
 			// Extensión para país emisor (Perú)
@@ -109,8 +120,6 @@ public class DyakuPractitionerMapper {
 			paisExt.setValue(pais);
 			type.addExtension(paisExt);
 			
-			identifier.setValue(dniAttr.getValue());
-			identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
 			practitioner.addIdentifier(identifier);
 			
 			log.info("✓ DNI mapeado: " + dniAttr.getValue());

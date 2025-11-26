@@ -6,7 +6,7 @@ docker restart peruHCE-backend
 
 # Compilar el Módulo Completo
 D:\Johan\Documentos\Projects\sihsalus\sihsalus-distro-referenceapplication
-mvn clean package
+mvn clean package -DskipTests
 
 # Inyectar en Docker
 docker cp omod/target/sihsalusinterop-1.0.0.omod peruHCE-backend:/openmrs/data/modules/

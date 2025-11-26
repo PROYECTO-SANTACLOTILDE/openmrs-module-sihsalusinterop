@@ -25,7 +25,8 @@
     
     <!-- Bean FhirContext R4 - Requerido por el módulo FHIR2 -->
     <!-- Este bean debe estar disponible antes de que FHIR2 se cargue -->
-    <bean id="fhirR4" class="ca.uhn.fhir.context.FhirContext" factory-method="forR4" scope="singleton"/>
+    <!-- Se registra como bean global para que esté disponible para otros módulos -->
+    <bean id="fhirR4" class="ca.uhn.fhir.context.FhirContext" factory-method="forR4" scope="singleton" lazy-init="false"/>
 
     <!-- Escanear componentes en el paquete api -->
     <context:component-scan base-package="org.openmrs.module.sihsalusinterop.api" />

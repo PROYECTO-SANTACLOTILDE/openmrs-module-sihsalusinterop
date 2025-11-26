@@ -77,17 +77,46 @@
 		<description>Allows user to view interoperability logs and queue status</description>
 	</privilege>
 
-	<!-- Required Global Properties 
+	<!-- Required Global Properties -->
 	<globalProperty>
-		<property>@MODULE_ID@.someProperty</property>
-		<defaultValue></defaultValue>
+		<property>sihsalusinterop.renhice.endpoint</property>
+		<defaultValue>http://hapi-fhir-server:8080/fhir</defaultValue>
 		<description>
-			A description of the global property goes here.  The description
-			should explain enough for administrators to understand the purpose
-			and possible values for the global property.
+			Endpoint URL del servidor FHIR de RENHICE (Dyaku).
+			En producción, usar la URL oficial del MINSA.
+			En desarrollo/prueba, usar el servidor HAPI FHIR local simulado.
+			NOTA: Usar el nombre del contenedor Docker (no localhost) si están en la misma red.
 		</description>
 	</globalProperty>
-	/Required Global Properties -->
+	
+	<globalProperty>
+		<property>sihsalusinterop.renhice.enabled</property>
+		<defaultValue>true</defaultValue>
+		<description>
+			Habilita o deshabilita el envío automático de datos a RENHICE.
+			Valores: true (habilitado) o false (deshabilitado).
+			Si se deshabilita, los mensajes no se encolarán automáticamente al guardar Encounters.
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>sihsalusinterop.queue.maxRetries</property>
+		<defaultValue>5</defaultValue>
+		<description>
+			Número máximo de reintentos para enviar un mensaje que falló.
+			Después de este número de intentos, el mensaje quedará en estado FAILED.
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>sihsalusinterop.queue.retryInterval</property>
+		<defaultValue>300000</defaultValue>
+		<description>
+			Intervalo de tiempo (en milisegundos) entre intentos de reenvío de mensajes fallidos.
+			Por defecto: 300000 ms = 5 minutos.
+		</description>
+	</globalProperty>
+	<!-- /Required Global Properties -->
 	
 	<!--
 	<dwr>

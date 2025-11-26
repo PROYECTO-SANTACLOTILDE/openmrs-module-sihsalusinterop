@@ -35,24 +35,34 @@ public class DyakuPatientMapper {
 	// ============================================================
 	
 	/**
-	 * URL del perfil FHIR para pacientes del MINSA
+	 * URL del perfil FHIR para pacientes del MINSA (Dyaku) Perfil oficial según:
+	 * https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PacientePe
 	 */
-	public static final String PROFILE_PACIENTE_MINSA = "http://minsa.gob.pe/fhir/StructureDefinition/PacienteMinsa";
+	public static final String PROFILE_PACIENTE_PE = "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/PacientePe";
 	
 	/**
-	 * OID del DNI RENIEC - Registro Nacional de Identificación y Estado Civil
+	 * OID del DNI RENIEC - Registro Nacional de Identificación y Estado Civil Según estándar
+	 * nacional peruano
 	 */
-	public static final String OID_DNI_RENIEC = "urn:oid:2.16.840.1.113883.4.447";
+	public static final String OID_DNI_RENIEC = "urn:oid:2.16.840.1.113883.4.904";
 	
 	/**
-	 * URL de la extensión para Apellido Materno (segundo apellido)
+	 * URL de la extensión para Tercer Apellido (perfil peruano) Perfil oficial:
+	 * https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-tercerapellido
 	 */
-	public static final String EXT_APELLIDO_MATERNO = "http://minsa.gob.pe/fhir/StructureDefinition/ApellidoMaterno";
+	public static final String EXT_TERCER_APELLIDO = "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-tercerapellido";
 	
 	/**
-	 * URL de la extensión para UBIGEO (código de ubicación geográfica)
+	 * URL de la extensión para UBIGEO (código de ubicación geográfica) Perfil oficial:
+	 * https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-ubigeo
 	 */
-	public static final String EXT_UBIGEO = "http://minsa.gob.pe/fhir/StructureDefinition/Ubigeo";
+	public static final String EXT_UBIGEO = "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-ubigeo";
+	
+	/**
+	 * URL de la extensión para País (perfil peruano) Perfil oficial:
+	 * https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-pais
+	 */
+	public static final String EXT_PAIS = "https://www.gob.pe/minsa/RENHICE/fhir/StructureDefinition/pe-pais";
 	
 	/**
 	 * Tipos de identificadores reconocidos en OpenMRS
@@ -119,11 +129,11 @@ public class DyakuPatientMapper {
 	// ============================================================
 	
 	/**
-	 * Configura el metadata del recurso FHIR con el perfil MINSA
+	 * Configura el metadata del recurso FHIR con el perfil PacientePe (Dyaku)
 	 */
 	private static void setMetaProfile(Patient fhirPatient) {
 		Meta meta = new Meta();
-		meta.addProfile(PROFILE_PACIENTE_MINSA);
+		meta.addProfile(PROFILE_PACIENTE_PE);
 		meta.setLastUpdated(new Date());
 		fhirPatient.setMeta(meta);
 	}
@@ -157,13 +167,24 @@ public class DyakuPatientMapper {
 				fhirIdentifier.setValue(dniValue);
 				fhirIdentifier.setUse(Identifier.IdentifierUse.OFFICIAL);
 				
-				// Agregar tipo de identificador
+				// Agregar tipo de identificador según CodeSystem peruano IdspersonaPeru
 				CodeableConcept type = new CodeableConcept();
 				type.addCoding()
-					.setSystem("http://terminology.hl7.org/CodeSystem/v2-0203")
-					.setCode("NI") // National Identifier
+					.setSystem("https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/IdspersonaPeru")
+					.setCode("1") // Código "1" = DNI según CodeSystem IdspersonaPeru
 					.setDisplay("DNI - Documento Nacional de Identidad");
 				fhirIdentifier.setType(type);
+				
+				// Agregar extensión pe-pais para el país emisor (Perú)
+				Extension paisExt = new Extension();
+				paisExt.setUrl(EXT_PAIS);
+				CodeableConcept pais = new CodeableConcept();
+				pais.addCoding()
+					.setSystem("https://www.gob.pe/minsa/RENHICE/fhir/CodeSystem/PaisesCS")
+					.setCode("PER")
+					.setDisplay("Perú");
+				paisExt.setValue(pais);
+				type.addExtension(paisExt);
 				
 				fhirPatient.addIdentifier(fhirIdentifier);
 				dniFound = true;
@@ -212,18 +233,28 @@ public class DyakuPatientMapper {
 			fhirName.setFamily(openmrsName.getFamilyName());
 		}
 		
-		// Apellido Materno (extensión del perfil MINSA)
-		// OpenMRS puede guardarlo en familyName2 o en familyNameSuffix
-		String apellidoMaterno = openmrsName.getFamilyName2();
-		if (apellidoMaterno != null && !apellidoMaterno.isEmpty()) {
+		// Segundo Apellido (Apellido Materno) - ya está en familyName2
+		// Tercer Apellido (extensión del perfil peruano pe-tercerapellido)
+		// OpenMRS puede guardar el tercer apellido en familyNameSuffix o en un atributo personalizado
+		// Por ahora, si familyName2 existe y es diferente al primer apellido, lo agregamos como segundo apellido
+		if (openmrsName.getFamilyName2() != null && !openmrsName.getFamilyName2().isEmpty()) {
+			// En OpenMRS, familyName2 normalmente es el apellido materno (segundo apellido)
+			// El tercer apellido sería un caso especial que se guardaría en otro campo
+			// Por ahora, verificamos si hay un tercer apellido en algún lugar
+			// NOTA: Esto puede requerir configuración adicional según cómo OpenMRS almacene los apellidos
+		}
+		
+		// Si hay un tercer apellido (por ejemplo, en un atributo personalizado o familyNameSuffix),
+		// se agregaría con la extensión pe-tercerapellido
+		String tercerApellido = openmrsName.getFamilyNameSuffix();
+		if (tercerApellido != null && !tercerApellido.isEmpty()) {
+			// Agregar extensión para el tercer apellido (perfil peruano)
+			Extension extTercerApellido = new Extension();
+			extTercerApellido.setUrl(EXT_TERCER_APELLIDO);
+			extTercerApellido.setValue(new StringType(tercerApellido));
+			fhirName.addExtension(extTercerApellido);
 			
-			// Agregar extensión para el apellido materno
-			Extension extApellidoMaterno = new Extension();
-			extApellidoMaterno.setUrl(EXT_APELLIDO_MATERNO);
-			extApellidoMaterno.setValue(new StringType(apellidoMaterno));
-			fhirName.addExtension(extApellidoMaterno);
-			
-			log.info("✓ Apellido materno mapeado: " + apellidoMaterno);
+			log.info("✓ Tercer apellido mapeado: " + tercerApellido);
 		}
 		
 		fhirPatient.addName(fhirName);

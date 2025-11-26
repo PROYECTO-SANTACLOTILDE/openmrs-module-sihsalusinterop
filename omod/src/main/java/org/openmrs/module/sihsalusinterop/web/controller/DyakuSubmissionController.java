@@ -12,8 +12,12 @@ package org.openmrs.module.sihsalusinterop.web.controller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.Concept;
+import org.openmrs.ConceptMap;
+import org.openmrs.api.ConceptService;
 import org.openmrs.module.sihsalusinterop.api.DyakuSenderService;
 import org.openmrs.module.sihsalusinterop.api.dto.InteropQueueItemDTO;
+import org.openmrs.module.sihsalusinterop.api.dto.TerminologyMappingDTO;
 import org.openmrs.module.sihsalusinterop.api.model.InteropQueueItem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -414,6 +418,218 @@ public class DyakuSubmissionController {
 			response.put("message", "Error: " + ex.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
+	}
+	
+	/**
+	 * GET /openmrs/ws/rest/v1/interop/terminology/check
+	 * 
+	 * Verifica qué Concepts tienen mapeos CIE-10/CPMS configurados
+	 * 
+	 * Parámetros:
+	 * - type (opcional): "CIE10" o "CPMS" (si no se especifica, verifica ambos)
+	 * - conceptId (opcional): ID del Concept específico a verificar
+	 * 
+	 * Respuesta:
+	 * {
+	 *   "success": true,
+	 *   "type": "CIE10",
+	 *   "totalConcepts": 150,
+	 *   "conceptsWithMapping": 120,
+	 *   "conceptsWithoutMapping": 30,
+	 *   "concepts": [...]
+	 * }
+	 */
+	@RequestMapping(value = "/terminology/check", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> checkTerminologyMappings(
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "conceptId", required = false) Integer conceptId) {
+		
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			log.info(">>> REST API: Verificación de mapeos de terminología solicitada. Type: " + type + ", ConceptId: " + conceptId);
+			
+			ConceptService conceptService = Context.getConceptService();
+			
+			// Variantes de nombres para CIE-10
+			String[] cie10Variants = {
+				"CIE-10", "CIE10", "ICD-10", "ICD10", 
+				"CIE 10", "ICD 10", "CLASIFICACION INTERNACIONAL",
+				"INTERNATIONAL CLASSIFICATION", "WHO ICD-10"
+			};
+			
+			// Variantes de nombres para CPMS
+			String[] cpmsVariants = {
+				"CPMS", "CATALOGO PROCEDIMIENTOS", "PROCEDIMIENTOS MEDICOS",
+				"CATALOGO PROCEDIMIENTOS MEDICOS", "PROCEDIMIENTOS SANITARIOS"
+			};
+			
+			List<TerminologyMappingDTO> concepts = new java.util.ArrayList<>();
+			int conceptsWithMapping = 0;
+			int conceptsWithoutMapping = 0;
+			
+			// Si se especifica un Concept ID, verificar solo ese
+			if (conceptId != null) {
+				Concept concept = conceptService.getConcept(conceptId);
+				if (concept != null) {
+					concepts.add(checkConceptMapping(concept, type, cie10Variants, cpmsVariants));
+				} else {
+					response.put("success", false);
+					response.put("message", "Concept con ID " + conceptId + " no encontrado");
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+				}
+			} else {
+				// Obtener todos los Concepts (limitado para evitar problemas de rendimiento)
+				// Nota: En producción, considerar usar paginación
+				// getAllConcepts(String, boolean, boolean) - name, includeRetired, includeVoided
+				List<Concept> allConcepts = conceptService.getAllConcepts(null, false, false);
+				
+				for (Concept concept : allConcepts) {
+					TerminologyMappingDTO dto = checkConceptMapping(concept, type, cie10Variants, cpmsVariants);
+					concepts.add(dto);
+					
+					if (dto.getHasMapping()) {
+						conceptsWithMapping++;
+					} else {
+						conceptsWithoutMapping++;
+					}
+				}
+			}
+			
+			// Contar si no se contó antes (caso de conceptId específico)
+			if (conceptId != null) {
+				if (concepts.get(0).getHasMapping()) {
+					conceptsWithMapping = 1;
+				} else {
+					conceptsWithoutMapping = 1;
+				}
+			}
+			
+			response.put("success", true);
+			if (type != null) {
+				response.put("type", type);
+			} else {
+				response.put("type", "ALL");
+			}
+			response.put("totalConcepts", concepts.size());
+			response.put("conceptsWithMapping", conceptsWithMapping);
+			response.put("conceptsWithoutMapping", conceptsWithoutMapping);
+			response.put("concepts", concepts);
+			
+			log.info(">>> REST API: Verificación completada. " + conceptsWithMapping + " con mapeo, " + conceptsWithoutMapping + " sin mapeo");
+			
+			return ResponseEntity.ok(response);
+			
+		} catch (Exception ex) {
+			log.error(">>> REST API: Error al verificar mapeos de terminología", ex);
+			response.put("success", false);
+			response.put("message", "Error: " + ex.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+	
+	/**
+	 * Verifica si un Concept tiene mapeo CIE-10 o CPMS
+	 */
+	private TerminologyMappingDTO checkConceptMapping(Concept concept, String type, String[] cie10Variants, String[] cpmsVariants) {
+		TerminologyMappingDTO dto = new TerminologyMappingDTO();
+		dto.setConceptId(concept.getConceptId());
+		dto.setDisplayName(concept.getDisplayString());
+		dto.setUuid(concept.getUuid());
+		dto.setHasMapping(false);
+		
+		if (concept.getConceptMappings() == null || concept.getConceptMappings().isEmpty()) {
+			return dto;
+		}
+		
+		// Verificar CIE-10
+		if (type == null || "CIE10".equalsIgnoreCase(type)) {
+			for (ConceptMap map : concept.getConceptMappings()) {
+				if (map.getConceptReferenceTerm() != null &&
+				    map.getConceptReferenceTerm().getConceptSource() != null) {
+					
+					org.openmrs.ConceptSource source = map.getConceptReferenceTerm().getConceptSource();
+					String sourceName = source.getName();
+					String sourceHl7Code = source.getHl7Code();
+					
+					boolean isCie10 = false;
+					if (sourceName != null) {
+						String sourceNameUpper = sourceName.toUpperCase();
+						for (String variant : cie10Variants) {
+							if (sourceNameUpper.contains(variant.toUpperCase())) {
+								isCie10 = true;
+								break;
+							}
+						}
+					}
+					
+					if (!isCie10 && sourceHl7Code != null) {
+						String hl7CodeUpper = sourceHl7Code.toUpperCase();
+						for (String variant : cie10Variants) {
+							if (hl7CodeUpper.contains(variant.toUpperCase())) {
+								isCie10 = true;
+								break;
+							}
+						}
+					}
+					
+					if (isCie10 && map.getConceptReferenceTerm().getCode() != null) {
+						dto.setHasMapping(true);
+						dto.setMappingCode(map.getConceptReferenceTerm().getCode());
+						dto.setMappingSource(source.getUuid());
+						dto.setMappingSourceName(source.getName());
+						if (type != null && "CIE10".equalsIgnoreCase(type)) {
+							return dto;
+						}
+					}
+				}
+			}
+		}
+		
+		// Verificar CPMS
+		if (type == null || "CPMS".equalsIgnoreCase(type)) {
+			for (ConceptMap map : concept.getConceptMappings()) {
+				if (map.getConceptReferenceTerm() != null &&
+				    map.getConceptReferenceTerm().getConceptSource() != null) {
+					
+					org.openmrs.ConceptSource source = map.getConceptReferenceTerm().getConceptSource();
+					String sourceName = source.getName();
+					String sourceHl7Code = source.getHl7Code();
+					
+					boolean isCpms = false;
+					if (sourceName != null) {
+						String sourceNameUpper = sourceName.toUpperCase();
+						for (String variant : cpmsVariants) {
+							if (sourceNameUpper.contains(variant.toUpperCase())) {
+								isCpms = true;
+								break;
+							}
+						}
+					}
+					
+					if (!isCpms && sourceHl7Code != null) {
+						String hl7CodeUpper = sourceHl7Code.toUpperCase();
+						for (String variant : cpmsVariants) {
+							if (hl7CodeUpper.contains(variant.toUpperCase())) {
+								isCpms = true;
+								break;
+							}
+						}
+					}
+					
+					if (isCpms && map.getConceptReferenceTerm().getCode() != null) {
+						dto.setHasMapping(true);
+						dto.setMappingCode(map.getConceptReferenceTerm().getCode());
+						dto.setMappingSource(source.getUuid());
+						dto.setMappingSourceName(source.getName());
+						return dto;
+					}
+				}
+			}
+		}
+		
+		return dto;
 	}
 }
 

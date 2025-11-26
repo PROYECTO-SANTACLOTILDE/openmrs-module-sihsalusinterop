@@ -8,12 +8,18 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.sihsalusinterop.api.mapper.DyakuPatientMapper;
 import org.openmrs.module.sihsalusinterop.api.mapper.DyakuOrganizationMapper;
 import org.openmrs.module.sihsalusinterop.api.mapper.DyakuPractitionerMapper;
 import org.openmrs.module.sihsalusinterop.api.mapper.DyakuEncounterMapper;
 import org.openmrs.module.sihsalusinterop.api.mapper.DyakuConditionMapper;
+import org.openmrs.module.sihsalusinterop.api.mapper.DyakuAllergyIntoleranceMapper;
+import org.openmrs.module.sihsalusinterop.api.mapper.DyakuMedicationStatementMapper;
+import org.openmrs.module.sihsalusinterop.api.mapper.DyakuProcedureMapper;
+import org.openmrs.module.sihsalusinterop.api.mapper.DyakuObservationMapper;
+import org.openmrs.Allergy;
+import org.openmrs.DrugOrder;
+import org.openmrs.Order;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,11 +124,35 @@ public class BundleBuilderService {
 			addBundleEntry(bundle, condition, "Condition/" + condition.getId(), Bundle.HTTPVerb.POST);
 		}
 		
-		// 6. Observations (Signos vitales, exámenes) - Opcional
-		log.info(">>> Agregando Observations al Bundle...");
-		// TODO: Mapear Observations si están disponibles
+		// 6. AllergyIntolerance (Alergias) - Opcional según perfil
+		log.info(">>> Agregando AllergyIntolerance (Alergias) al Bundle...");
+		List<AllergyIntolerance> allergies = buildAllergies(patient, patientRef);
+		for (AllergyIntolerance allergy : allergies) {
+			addBundleEntry(bundle, allergy, "AllergyIntolerance/" + allergy.getId(), Bundle.HTTPVerb.POST);
+		}
 		
-		// 7. Composition (opcional según perfil)
+		// 7. MedicationStatement (Medicaciones) - Opcional según perfil
+		log.info(">>> Agregando MedicationStatement (Medicaciones) al Bundle...");
+		List<MedicationStatement> medications = buildMedications(encounter, patientRef);
+		for (MedicationStatement medication : medications) {
+			addBundleEntry(bundle, medication, "MedicationStatement/" + medication.getId(), Bundle.HTTPVerb.POST);
+		}
+		
+		// 8. Procedures (Procedimientos) - Opcional
+		log.info(">>> Agregando Procedures (Procedimientos) al Bundle...");
+		List<Procedure> procedures = buildProcedures(encounter, patientRef, "Encounter/" + encounter.getUuid());
+		for (Procedure procedure : procedures) {
+			addBundleEntry(bundle, procedure, "Procedure/" + procedure.getId(), Bundle.HTTPVerb.POST);
+		}
+		
+		// 9. Observations (Signos vitales, exámenes) - Opcional
+		log.info(">>> Agregando Observations (Signos vitales, laboratorios) al Bundle...");
+		List<Observation> observations = buildObservations(encounter, patientRef, "Encounter/" + encounter.getUuid());
+		for (Observation observation : observations) {
+			addBundleEntry(bundle, observation, "Observation/" + observation.getId(), Bundle.HTTPVerb.POST);
+		}
+		
+		// 10. Composition (opcional según perfil)
 		// TODO: Crear Composition si se requiere según perfil CompositionPe
 		
 		log.info("✓ Bundle construido exitosamente con " + bundle.getEntry().size() + " recursos");
@@ -160,6 +190,238 @@ public class BundleBuilderService {
 		}
 		
 		return conditions;
+	}
+	
+	/**
+	 * Construye las AllergyIntolerance (Alergias) desde el Patient
+	 */
+	private List<AllergyIntolerance> buildAllergies(Patient patient, String patientRef) {
+		List<AllergyIntolerance> allergies = new ArrayList<>();
+		
+		if (patient == null) {
+			return allergies;
+		}
+		
+		// Obtener alergias del paciente
+		try {
+			// OpenMRS puede tener alergias accesibles a través del Patient.getAllergies()
+			// O puede requerir usar el servicio de alergias
+			// Intentar obtener alergias usando reflexión para mayor compatibilidad
+			java.util.Collection<Allergy> openmrsAllergies = null;
+			
+			try {
+				// Método 1: Intentar getAllergies() en Patient
+				java.lang.reflect.Method getAllergies = patient.getClass().getMethod("getAllergies");
+				Object result = getAllergies.invoke(patient);
+				if (result instanceof java.util.Collection) {
+					openmrsAllergies = (java.util.Collection<Allergy>) result;
+				}
+			} catch (Exception e1) {
+				// Método 2: Intentar usar AllergyService
+				try {
+					Object allergyService = org.openmrs.api.context.Context.getService(
+						org.openmrs.api.context.Context.loadClass("org.openmrs.api.AllergyService"));
+					if (allergyService != null) {
+						java.lang.reflect.Method getAllergies = allergyService.getClass().getMethod("getAllergies", Patient.class);
+						Object result = getAllergies.invoke(allergyService, patient);
+						if (result instanceof java.util.Collection) {
+							openmrsAllergies = (java.util.Collection<Allergy>) result;
+						}
+					}
+				} catch (Exception e2) {
+					log.warn("No se pudo obtener alergias del paciente. AllergyService puede no estar disponible.");
+				}
+			}
+			
+			if (openmrsAllergies != null) {
+				for (Allergy allergy : openmrsAllergies) {
+					if (allergy != null && (allergy.getVoided() == null || !allergy.getVoided())) {
+						try {
+							AllergyIntolerance fhirAllergy = 
+								DyakuAllergyIntoleranceMapper.toDyakuFhir(allergy, patientRef);
+							allergies.add(fhirAllergy);
+						} catch (Exception e) {
+							log.warn("Error al mapear Allergy a AllergyIntolerance: " + allergy.getAllergyId(), e);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.warn("Error al obtener alergias del paciente: " + e.getMessage());
+		}
+		
+		return allergies;
+	}
+	
+	/**
+	 * Construye las MedicationStatement (Medicaciones) desde el Encounter
+	 */
+	private List<MedicationStatement> buildMedications(Encounter encounter, String patientRef) {
+		List<MedicationStatement> medications = new ArrayList<>();
+		
+		if (encounter == null || encounter.getEncounterId() == null) {
+			return medications;
+		}
+		
+		// Buscar DrugOrders en el Encounter
+		try {
+			org.openmrs.api.OrderService orderService = 
+				org.openmrs.api.context.Context.getOrderService();
+			
+			if (orderService != null) {
+				// Obtener órdenes del encounter usando el método correcto
+				// OrderService puede tener diferentes métodos según la versión
+				List<Order> orders = null;
+				
+				try {
+					// Intentar método getOrdersByEncounter
+					java.lang.reflect.Method getOrdersByEncounter = 
+						orderService.getClass().getMethod("getOrdersByEncounter", Encounter.class);
+					Object result = getOrdersByEncounter.invoke(orderService, encounter);
+					if (result instanceof java.util.List) {
+						orders = (java.util.List<Order>) result;
+					}
+				} catch (Exception e1) {
+					// Intentar método alternativo: getOrders del Patient
+					try {
+						Patient patient = encounter.getPatient();
+						if (patient != null) {
+							orders = orderService.getOrders(patient, null, null, false);
+							// Filtrar solo las del encounter
+							if (orders != null) {
+								orders.removeIf(order -> !encounter.equals(order.getEncounter()));
+							}
+						}
+					} catch (Exception e2) {
+						log.warn("No se pudo obtener órdenes del Encounter: " + e2.getMessage());
+					}
+				}
+				
+				if (orders != null) {
+					for (Order order : orders) {
+						if (order instanceof DrugOrder && (order.getVoided() == null || !order.getVoided())) {
+							try {
+								DrugOrder drugOrder = (DrugOrder) order;
+								MedicationStatement medication = 
+									DyakuMedicationStatementMapper.toDyakuFhir(drugOrder, patientRef);
+								medications.add(medication);
+							} catch (Exception e) {
+								log.warn("Error al mapear DrugOrder a MedicationStatement: " + order.getOrderId(), e);
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.warn("Error al obtener medicaciones del Encounter: " + e.getMessage());
+		}
+		
+		return medications;
+	}
+	
+	/**
+	 * Construye las Procedures (Procedimientos) desde el Encounter
+	 */
+	private List<Procedure> buildProcedures(Encounter encounter, String patientRef, String encounterRef) {
+		List<Procedure> procedures = new ArrayList<>();
+		
+		if (encounter == null || encounter.getEncounterId() == null) {
+			return procedures;
+		}
+		
+		// Buscar Orders tipo ProcedureOrder en el Encounter
+		try {
+			org.openmrs.api.OrderService orderService = 
+				org.openmrs.api.context.Context.getOrderService();
+			
+			if (orderService != null) {
+				// Obtener órdenes del encounter usando el método correcto
+				List<Order> orders = null;
+				
+				try {
+					// Intentar método getOrdersByEncounter
+					java.lang.reflect.Method getOrdersByEncounter = 
+						orderService.getClass().getMethod("getOrdersByEncounter", Encounter.class);
+					Object result = getOrdersByEncounter.invoke(orderService, encounter);
+					if (result instanceof java.util.List) {
+						orders = (java.util.List<Order>) result;
+					}
+				} catch (Exception e1) {
+					// Intentar método alternativo: getOrders del Patient
+					try {
+						Patient patient = encounter.getPatient();
+						if (patient != null) {
+							orders = orderService.getOrders(patient, null, null, false);
+							// Filtrar solo las del encounter
+							if (orders != null) {
+								orders.removeIf(order -> !encounter.equals(order.getEncounter()));
+							}
+						}
+					} catch (Exception e2) {
+						log.warn("No se pudo obtener órdenes del Encounter: " + e2.getMessage());
+					}
+				}
+				
+				if (orders != null) {
+					for (Order order : orders) {
+						// Verificar si es un ProcedureOrder
+						// En OpenMRS, los procedimientos pueden ser Order con orderType = "ProcedureOrder"
+						if ((order.getVoided() == null || !order.getVoided()) && 
+						    order.getOrderType() != null &&
+						    order.getOrderType().getName() != null &&
+						    (order.getOrderType().getName().toUpperCase().contains("PROCEDURE") ||
+						     order.getOrderType().getName().toUpperCase().contains("PROCEDIMIENTO"))) {
+							try {
+								Procedure procedure = 
+									DyakuProcedureMapper.toDyakuFhir(order, patientRef, encounterRef);
+								procedures.add(procedure);
+							} catch (Exception e) {
+								log.warn("Error al mapear Order a Procedure: " + order.getOrderId(), e);
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.warn("Error al obtener procedimientos del Encounter: " + e.getMessage());
+		}
+		
+		return procedures;
+	}
+	
+	/**
+	 * Construye las Observations (Signos vitales, laboratorios) desde el Encounter
+	 */
+	private List<Observation> buildObservations(Encounter encounter, String patientRef, String encounterRef) {
+		List<Observation> observations = new ArrayList<>();
+		
+		if (encounter == null) {
+			return observations;
+		}
+		
+		// Obtener todos los Obs del Encounter que no sean diagnósticos
+		for (Obs obs : encounter.getAllObs(true)) {
+			// Excluir diagnósticos (ya se mapearon como Conditions)
+			if (obs.getConcept() != null) {
+				String conceptName = obs.getConcept().getName().getName().toUpperCase();
+				boolean isDiagnosis = conceptName.contains("DIAGNOSIS") || 
+				                     conceptName.contains("DIAGNOSTICO") ||
+				                     (obs.getConcept().getConceptClass() != null &&
+				                      obs.getConcept().getConceptClass().getName().equals("Diagnosis"));
+				
+				if (!isDiagnosis && !obs.getVoided()) {
+					try {
+						Observation observation = 
+							DyakuObservationMapper.toDyakuFhir(obs, patientRef, encounterRef);
+						observations.add(observation);
+					} catch (Exception e) {
+						log.warn("Error al mapear Obs a Observation: " + obs.getId(), e);
+					}
+				}
+			}
+		}
+		
+		return observations;
 	}
 	
 	/**

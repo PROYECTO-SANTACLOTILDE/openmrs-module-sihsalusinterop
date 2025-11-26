@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hl7.fhir.r4.model.*;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
-import org.openmrs.Location;
 
 /**
  * DyakuEncounterMapper - Conversor de Encounters OpenMRS a FHIR R4 Hospital Santa Clotilde -

@@ -420,3 +420,5 @@ Cuando continúes en una nueva conversación, verifica:
 **Última actualización:** Noviembre 2025  
 **Siguiente paso recomendado:** Completar mapeadores FHIR con perfiles Dyaku
 
+
+

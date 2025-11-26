@@ -33,5 +33,6 @@
 	<!-- ============================================================ -->
 	
 	<!-- Bean FhirContext R4 - Requerido por el módulo FHIR2 en el contexto web -->
-	<bean id="fhirR4" class="ca.uhn.fhir.context.FhirContext" factory-method="forR4" scope="singleton"/>
+	<!-- Se registra como bean global para que esté disponible para otros módulos -->
+	<bean id="fhirR4" class="ca.uhn.fhir.context.FhirContext" factory-method="forR4" scope="singleton" lazy-init="false"/>
 </beans>
