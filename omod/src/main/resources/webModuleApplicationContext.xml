@@ -25,10 +25,5 @@
     <!-- REST Controllers and Web Components                         -->
     <!-- ============================================================ -->
 
-	<!-- Component scan deshabilitado - usamos servlet directo -->
-	<!-- <context:component-scan base-package="org.openmrs.module.sihsalusinterop.web.controller" /> -->
-	
-	<!-- ============================================================ -->
-	<!-- FHIR CONTEXT BEAN REMOVIDO - Causaba conflictos de Spring  -->
-	<!-- ============================================================ -->
+	<context:component-scan base-package="org.openmrs.module.sihsalusinterop.web.controller" />
 </beans>

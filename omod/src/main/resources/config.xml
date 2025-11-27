@@ -148,15 +148,7 @@
 	-->
 	
 	<!-- Servlets -->
-	<servlet>
-		<servlet-name>monitoreoInteroperabilidad.form</servlet-name>
-		<servlet-class>org.openmrs.module.sihsalusinterop.web.controller.MonitoreoInteroperabilidadServlet</servlet-class>
-	</servlet>
-	
-	<url>
-		<url>monitoreoInteroperabilidad.form</url>
-		<servlet-name>monitoreoInteroperabilidad.form</servlet-name>
-	</url>
+	<!-- Spring MVC Controllers handle the URLs automatically via annotations -->
 	<!-- /Servlets -->
 	
 	
