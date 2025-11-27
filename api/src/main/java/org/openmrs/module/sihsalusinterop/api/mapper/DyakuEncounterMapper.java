@@ -81,11 +81,19 @@ public class DyakuEncounterMapper {
 		}
 		fhirEncounter.setPeriod(period);
 		
-		// Ubicación (Location)
+		// Ubicación (Location) - Debe ser un recurso Location, no Organization
+		// Si hay Location en OpenMRS, crear referencia a Location
 		if (encounter.getLocation() != null) {
 			org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent location = new org.hl7.fhir.r4.model.Encounter.EncounterLocationComponent();
-			location.getLocation().setReference(organizationReference);
+			// Location debe referenciar a un recurso Location, no Organization
+			// Por ahora, usar el UUID del Location de OpenMRS
+			location.getLocation().setReference("Location/" + encounter.getLocation().getUuid());
 			fhirEncounter.addLocation(location);
+		}
+		
+		// Service Provider (Organization) - La organización va aquí, no en location
+		if (organizationReference != null) {
+			fhirEncounter.getServiceProvider().setReference(organizationReference);
 		}
 		
 		// Servicio (se puede mapear desde Location o atributos)

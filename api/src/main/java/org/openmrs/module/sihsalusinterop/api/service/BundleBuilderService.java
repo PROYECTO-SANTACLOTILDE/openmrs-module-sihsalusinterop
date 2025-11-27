@@ -17,6 +17,7 @@ import org.openmrs.module.sihsalusinterop.api.mapper.DyakuAllergyIntoleranceMapp
 import org.openmrs.module.sihsalusinterop.api.mapper.DyakuMedicationStatementMapper;
 import org.openmrs.module.sihsalusinterop.api.mapper.DyakuProcedureMapper;
 import org.openmrs.module.sihsalusinterop.api.mapper.DyakuObservationMapper;
+import org.openmrs.module.sihsalusinterop.api.mapper.DyakuImmunizationMapper;
 import org.openmrs.Allergy;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
@@ -66,8 +67,10 @@ public class BundleBuilderService {
 		meta.addProfile(PROFILE_BUNDLE_PE);
 		bundle.setMeta(meta);
 		
-		// Tipo: document (según perfil BundlePe)
-		bundle.setType(Bundle.BundleType.DOCUMENT);
+		// Tipo: transaction (para que HAPI FHIR pueda procesarlo)
+		// Nota: Aunque el perfil BundlePe puede requerir "document", 
+		// HAPI FHIR necesita "transaction" o "batch" para procesar el Bundle
+		bundle.setType(Bundle.BundleType.TRANSACTION);
 		
 		// Identificador único del Bundle
 		Identifier bundleIdentifier = new Identifier();
@@ -91,68 +94,120 @@ public class BundleBuilderService {
 		String patientRef = "Patient/" + patient.getUuid();
 		String organizationRef = location != null ? "Organization/" + location.getUuid() : "Organization/hospital-santa-clotilde";
 		String practitionerRef = creator != null ? "Practitioner/" + creator.getUuid() : "Practitioner/unknown";
+		String locationRef = location != null ? "Location/" + location.getUuid() : null;
 		
 		// 1. Patient (obligatorio según perfil)
 		log.info(">>> Agregando Patient al Bundle...");
 		org.hl7.fhir.r4.model.Patient fhirPatient = DyakuPatientMapper.toDyakuFhir(patient);
-		addBundleEntry(bundle, fhirPatient, patientRef, Bundle.HTTPVerb.POST);
+		
+		// Obtener DNI del paciente para conditional create
+		String dniIdentifier = null;
+		if (fhirPatient.getIdentifier() != null && !fhirPatient.getIdentifier().isEmpty()) {
+			Identifier dni = fhirPatient.getIdentifier().get(0);
+			if (dni.getSystem() != null && dni.getValue() != null) {
+				dniIdentifier = "identifier=" + dni.getSystem() + "|" + dni.getValue();
+			}
+		}
+		
+		// Usar conditional create para evitar duplicados
+		addBundleEntry(bundle, fhirPatient, patientRef, Bundle.HTTPVerb.POST, dniIdentifier);
 		
 		// 2. Organization (obligatorio según perfil)
 		if (location != null) {
 			log.info(">>> Agregando Organization al Bundle...");
 			Organization organization = DyakuOrganizationMapper.toDyakuFhir(location);
-			addBundleEntry(bundle, organization, organizationRef, Bundle.HTTPVerb.POST);
+			
+			// Usar identifier para conditional create (evitar duplicados)
+			String orgCondition = null;
+			if (organization.getIdentifier() != null && !organization.getIdentifier().isEmpty()) {
+				Identifier orgId = organization.getIdentifier().get(0);
+				if (orgId.getValue() != null) {
+					orgCondition = "identifier=" + orgId.getValue();
+				}
+			}
+			addBundleEntry(bundle, organization, organizationRef, Bundle.HTTPVerb.POST, orgCondition);
 		}
 		
-		// 3. Practitioner (obligatorio según perfil)
+		// 3. Location (necesario para Encounter.location)
+		if (location != null && locationRef != null) {
+			log.info(">>> Agregando Location al Bundle...");
+			org.hl7.fhir.r4.model.Location fhirLocation = new org.hl7.fhir.r4.model.Location();
+			fhirLocation.setId(location.getUuid());
+			fhirLocation.setStatus(org.hl7.fhir.r4.model.Location.LocationStatus.ACTIVE);
+			fhirLocation.setName(location.getName());
+			if (location.getDescription() != null) {
+				fhirLocation.setDescription(location.getDescription());
+			}
+			// Referencia a la Organization
+			fhirLocation.getManagingOrganization().setReference(organizationRef);
+			addBundleEntry(bundle, fhirLocation, locationRef, Bundle.HTTPVerb.POST);
+		}
+		
+		// 4. Practitioner (obligatorio según perfil)
 		if (creator != null) {
 			log.info(">>> Agregando Practitioner al Bundle...");
 			Practitioner practitioner = DyakuPractitionerMapper.toDyakuFhir(creator);
-			addBundleEntry(bundle, practitioner, practitionerRef, Bundle.HTTPVerb.POST);
+			
+			// Usar DNI para conditional create (evitar duplicados)
+			String pracCondition = null;
+			if (practitioner.getIdentifier() != null && !practitioner.getIdentifier().isEmpty()) {
+				Identifier pracId = practitioner.getIdentifier().get(0);
+				if (pracId.getSystem() != null && pracId.getValue() != null) {
+					pracCondition = "identifier=" + pracId.getSystem() + "|" + pracId.getValue();
+				}
+			}
+			addBundleEntry(bundle, practitioner, practitionerRef, Bundle.HTTPVerb.POST, pracCondition);
 		}
 		
-		// 4. Encounter
+		// 5. Encounter
 		log.info(">>> Agregando Encounter al Bundle...");
 		org.hl7.fhir.r4.model.Encounter fhirEncounter = 
 			DyakuEncounterMapper.toDyakuFhir(encounter, patientRef, organizationRef);
 		addBundleEntry(bundle, fhirEncounter, "Encounter/" + encounter.getUuid(), Bundle.HTTPVerb.POST);
 		
-		// 5. Conditions (Diagnósticos) - Opcional según perfil
+		// 6. Conditions (Diagnósticos) - Opcional según perfil
 		log.info(">>> Agregando Conditions (Diagnósticos) al Bundle...");
 		List<org.hl7.fhir.r4.model.Condition> conditions = buildConditions(encounter, patientRef);
 		for (org.hl7.fhir.r4.model.Condition condition : conditions) {
 			addBundleEntry(bundle, condition, "Condition/" + condition.getId(), Bundle.HTTPVerb.POST);
 		}
 		
-		// 6. AllergyIntolerance (Alergias) - Opcional según perfil
+		// 7. AllergyIntolerance (Alergias) - Opcional según perfil
 		log.info(">>> Agregando AllergyIntolerance (Alergias) al Bundle...");
 		List<AllergyIntolerance> allergies = buildAllergies(patient, patientRef);
 		for (AllergyIntolerance allergy : allergies) {
 			addBundleEntry(bundle, allergy, "AllergyIntolerance/" + allergy.getId(), Bundle.HTTPVerb.POST);
 		}
 		
-		// 7. MedicationStatement (Medicaciones) - Opcional según perfil
+		// 8. MedicationStatement (Medicaciones) - Opcional según perfil
 		log.info(">>> Agregando MedicationStatement (Medicaciones) al Bundle...");
 		List<MedicationStatement> medications = buildMedications(encounter, patientRef);
 		for (MedicationStatement medication : medications) {
 			addBundleEntry(bundle, medication, "MedicationStatement/" + medication.getId(), Bundle.HTTPVerb.POST);
 		}
 		
-		// 8. Procedures (Procedimientos) - Opcional
+		// 9. Procedures (Procedimientos) - Opcional
 		log.info(">>> Agregando Procedures (Procedimientos) al Bundle...");
 		List<Procedure> procedures = buildProcedures(encounter, patientRef, "Encounter/" + encounter.getUuid());
 		for (Procedure procedure : procedures) {
 			addBundleEntry(bundle, procedure, "Procedure/" + procedure.getId(), Bundle.HTTPVerb.POST);
 		}
 		
-		// 9. Observations (Signos vitales, exámenes) - Opcional
+		// 10. Observations (Signos vitales, exámenes) - Opcional
 		log.info(">>> Agregando Observations (Signos vitales, laboratorios) al Bundle...");
 		List<Observation> observations = buildObservations(encounter, patientRef, "Encounter/" + encounter.getUuid());
 		for (Observation observation : observations) {
 			addBundleEntry(bundle, observation, "Observation/" + observation.getId(), Bundle.HTTPVerb.POST);
 		}
 		
-		// 10. Composition (opcional según perfil)
+		// 11. Immunizations (Vacunas) - Opcional
+		log.info(">>> Agregando Immunizations (Vacunas) al Bundle...");
+		List<Immunization> immunizations = buildImmunizations(encounter, patientRef, "Encounter/" + encounter.getUuid());
+		for (Immunization immunization : immunizations) {
+			addBundleEntry(bundle, immunization, "Immunization/" + immunization.getId(), Bundle.HTTPVerb.POST);
+		}
+		
+		// 12. Composition (opcional según perfil)
 		// TODO: Crear Composition si se requiere según perfil CompositionPe
 		
 		log.info("✓ Bundle construido exitosamente con " + bundle.getEntry().size() + " recursos");
@@ -399,7 +454,7 @@ public class BundleBuilderService {
 			return observations;
 		}
 		
-		// Obtener todos los Obs del Encounter que no sean diagnósticos
+		// Obtener todos los Obs del Encounter que no sean diagnósticos ni inmunizaciones
 		for (Obs obs : encounter.getAllObs(true)) {
 			// Excluir diagnósticos (ya se mapearon como Conditions)
 			if (obs.getConcept() != null) {
@@ -409,7 +464,10 @@ public class BundleBuilderService {
 				                     (obs.getConcept().getConceptClass() != null &&
 				                      obs.getConcept().getConceptClass().getName().equals("Diagnosis"));
 				
-				if (!isDiagnosis && !obs.getVoided()) {
+				// Excluir inmunizaciones (ya se mapearon como Immunizations)
+				boolean isImmunization = DyakuImmunizationMapper.isImmunizationObs(obs);
+				
+				if (!isDiagnosis && !isImmunization && !obs.getVoided()) {
 					try {
 						Observation observation = 
 							DyakuObservationMapper.toDyakuFhir(obs, patientRef, encounterRef);
@@ -425,12 +483,54 @@ public class BundleBuilderService {
 	}
 	
 	/**
+	 * Construye las Immunizations (Vacunas) desde el Encounter
+	 */
+	private List<Immunization> buildImmunizations(Encounter encounter, String patientRef, String encounterRef) {
+		List<Immunization> immunizations = new ArrayList<>();
+		
+		if (encounter == null) {
+			return immunizations;
+		}
+		
+		// Buscar Obs que representen vacunas
+		for (Obs obs : encounter.getAllObs(true)) {
+			if (obs.getConcept() != null && !obs.getVoided()) {
+				// Verificar si es una inmunización
+				if (DyakuImmunizationMapper.isImmunizationObs(obs)) {
+					try {
+						Immunization immunization = 
+							DyakuImmunizationMapper.toDyakuFhir(obs, patientRef, encounterRef);
+						immunizations.add(immunization);
+					} catch (Exception e) {
+						log.warn("Error al mapear Obs a Immunization: " + obs.getId(), e);
+					}
+				}
+			}
+		}
+		
+		return immunizations;
+	}
+	
+	/**
 	 * Agrega una entrada al Bundle
 	 */
 	private void addBundleEntry(Bundle bundle, Resource resource, String fullUrl, Bundle.HTTPVerb method) {
+		addBundleEntry(bundle, resource, fullUrl, method, null);
+	}
+	
+	/**
+	 * Agrega una entrada al Bundle con conditional create (ifNoneExist)
+	 * 
+	 * @param bundle Bundle al que agregar la entrada
+	 * @param resource Recurso FHIR a agregar
+	 * @param fullUrl URL completa del recurso (para referencias internas)
+	 * @param method Método HTTP (POST, PUT, etc.)
+	 * @param ifNoneExist Condición para crear solo si no existe (ej: "identifier=system|value")
+	 */
+	private void addBundleEntry(Bundle bundle, Resource resource, String fullUrl, Bundle.HTTPVerb method, String ifNoneExist) {
 		Bundle.BundleEntryComponent entry = bundle.addEntry();
 		
-		// Full URL (referencia local)
+		// Full URL (referencia local) - Usar URN UUID para referencias temporales
 		entry.setFullUrl(fullUrl);
 		
 		// Recurso
@@ -444,6 +544,11 @@ public class BundleBuilderService {
 		String resourceType = resource.getResourceType().name();
 		if (method == Bundle.HTTPVerb.POST) {
 			request.setUrl(resourceType);
+			
+			// Si hay condición ifNoneExist, agregar para evitar duplicados
+			if (ifNoneExist != null && !ifNoneExist.isEmpty()) {
+				request.setIfNoneExist(ifNoneExist);
+			}
 		} else if (method == Bundle.HTTPVerb.PUT) {
 			request.setUrl(resourceType + "/" + resource.getId());
 		}

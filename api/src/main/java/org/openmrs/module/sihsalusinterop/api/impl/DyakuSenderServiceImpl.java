@@ -140,11 +140,20 @@ public class DyakuSenderServiceImpl extends BaseOpenmrsService implements DyakuS
 			log.info(">>> Conectando a endpoint FHIR: " + endpoint);
 			IGenericClient client = fhirContext.newRestfulGenericClient(endpoint);
 			
+			// Configurar timeout más largo para Bundles grandes (60 segundos)
+			// HAPI FHIR puede tardar en procesar Bundles grandes
+			ca.uhn.fhir.rest.client.api.IRestfulClientFactory clientFactory = fhirContext.getRestfulClientFactory();
+			clientFactory.setConnectionRequestTimeout(60000); // 60 segundos
+			clientFactory.setSocketTimeout(60000); // 60 segundos
+			clientFactory.setConnectTimeout(10000); // 10 segundos para conexión inicial
+			
 			// Parsear el payload JSON a Bundle FHIR
 			Bundle bundle = fhirContext.newJsonParser().parseResource(Bundle.class, item.getPayload());
 			
+			log.info(">>> Bundle parseado. Número de recursos: " + (bundle.getEntry() != null ? bundle.getEntry().size() : 0));
+			
 			// Enviar el Bundle mediante transacción (POST /fhir)
-			log.info(">>> Enviando Bundle FHIR al servidor...");
+			log.info(">>> Enviando Bundle FHIR al servidor (timeout: 60s)...");
 			Bundle response = client.transaction().withBundle(bundle).execute();
 			
 			// Si llegamos aquí, el envío fue exitoso

@@ -25,14 +25,10 @@
     <!-- REST Controllers and Web Components                         -->
     <!-- ============================================================ -->
 
-	<context:component-scan base-package="org.openmrs.module.sihsalusinterop.web.controller" />
+	<!-- Component scan deshabilitado - usamos servlet directo -->
+	<!-- <context:component-scan base-package="org.openmrs.module.sihsalusinterop.web.controller" /> -->
 	
 	<!-- ============================================================ -->
-	<!-- FHIR CONTEXT BEAN (Para compatibilidad con módulo FHIR2)   -->
-	<!-- Registrado también en el contexto web                      -->
+	<!-- FHIR CONTEXT BEAN REMOVIDO - Causaba conflictos de Spring  -->
 	<!-- ============================================================ -->
-	
-	<!-- Bean FhirContext R4 - Requerido por el módulo FHIR2 en el contexto web -->
-	<!-- Se registra como bean global para que esté disponible para otros módulos -->
-	<bean id="fhirR4" class="ca.uhn.fhir.context.FhirContext" factory-method="forR4" scope="singleton" lazy-init="false"/>
 </beans>

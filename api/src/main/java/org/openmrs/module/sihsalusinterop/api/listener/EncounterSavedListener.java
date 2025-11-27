@@ -59,7 +59,29 @@ public class EncounterSavedListener {
 				// Abrir sesión de OpenMRS para el hilo daemon
 				Context.openSession();
 				
+				// Autenticar como usuario daemon
+				try {
+					Context.authenticate("daemon", "Daemon123");
+				} catch (Exception e) {
+					// Si no existe daemon, usar admin
+					try {
+						Context.authenticate("admin", "Admin123");
+					} catch (Exception e2) {
+						log.error(">>> [EVENT] No se pudo autenticar: " + e2.getMessage());
+						return;
+					}
+				}
+				
 				log.info(">>> [EVENT] Encounter guardado detectado: " + encounter.getId());
+				
+				// Recargar el Encounter con todas sus relaciones para evitar LazyInitializationException
+				org.openmrs.api.EncounterService encounterService = Context.getEncounterService();
+				Encounter reloadedEncounter = encounterService.getEncounter(encounter.getEncounterId());
+				
+				if (reloadedEncounter == null) {
+					log.warn(">>> [EVENT] No se pudo recargar el Encounter: " + encounter.getId());
+					return;
+				}
 				
 				// Obtener BundleBuilderService como bean de Spring
 				BundleBuilderService bundleService = getBundleBuilderService();
@@ -71,11 +93,11 @@ public class EncounterSavedListener {
 				// Construir Bundle FHIR
 				Bundle bundle;
 				try {
-					bundle = bundleService.buildClinicalSummaryBundle(encounter);
+					bundle = bundleService.buildClinicalSummaryBundle(reloadedEncounter);
 				} catch (InteropException e) {
 					// Si el paciente no tiene DNI u otro error de interoperabilidad, loguear y salir
 					if (e.getErrorCode() != null && e.getErrorCode().equals("DNI_NOT_FOUND")) {
-						log.warn(">>> [EVENT] Encounter " + encounter.getId() + " no procesado: " + e.getMessage());
+						log.warn(">>> [EVENT] Encounter " + reloadedEncounter.getId() + " no procesado: " + e.getMessage());
 						log.warn(">>> [EVENT] El paciente debe tener DNI para enviar a RENHICE. Agregar DNI al paciente en OpenMRS.");
 					} else {
 						log.error(">>> [EVENT] Error de interoperabilidad al construir Bundle: " + e.getMessage(), e);
@@ -100,10 +122,10 @@ public class EncounterSavedListener {
 				
 				senderService.queueMessage("FHIR_BUNDLE", jsonPayload, endpoint);
 				
-				log.info(">>> [EVENT] Bundle FHIR encolado exitosamente para Encounter: " + encounter.getId());
+				log.info(">>> [EVENT] Bundle FHIR encolado exitosamente para Encounter: " + reloadedEncounter.getId());
 				
 			} catch (Exception e) {
-				log.error(">>> [EVENT] Error al procesar Encounter guardado: " + encounter.getId(), e);
+				log.error(">>> [EVENT] Error al procesar Encounter guardado: " + (encounter != null ? encounter.getId() : "unknown"), e);
 			} finally {
 				// Cerrar sesión de OpenMRS para evitar memory leaks
 				try {
