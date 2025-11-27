@@ -1,6 +1,9 @@
 # Borrar Módulo del Docker
 docker exec peruHCE-backend rm /openmrs/data/modules/sihsalusinterop-1.0.0.omod
 
+# Limpiar caché
+docker exec peruHCE-backend rm -rf /openmrs/data/.openmrs-lib-cache/*; Write-Host "Caché limpiado" -ForegroundColor Green
+
 # Reiniciar
 docker restart peruHCE-backend
 
