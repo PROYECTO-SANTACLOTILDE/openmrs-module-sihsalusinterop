@@ -30,4 +30,3 @@ public class MonitoreoInteroperabilidadController {
 		return "/module/sihsalusinterop/pages/monitoreoInteroperabilidad";
 	}
 }
-

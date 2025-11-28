@@ -813,4 +813,3 @@ public class DyakuSubmissionController {
 		return dto;
 	}
 }
-
