@@ -17,19 +17,19 @@ El Módulo de Interoperabilidad SIH.SALUS permite:
 
 ## Características Principales
 
-- **Estándar HL7 FHIR R4**: Implementación completa con perfiles peruanos Dyaku
-- **Offline-First**: Cola de mensajes persistente con reintentos automáticos para zonas rurales
-- **Mapeo Completo IPS**: Medicamentos, Alergias, Diagnósticos, Procedimientos, Inmunizaciones, Observaciones
-- **Seguridad**: TLS 1.2+, control de acceso por privilegios, trazabilidad completa
-- **Monitoreo**: Interfaz web para supervisión de mensajes y diagnóstico de errores
+- Estándar HL7 FHIR R4: Implementación completa con perfiles peruanos Dyaku
+- Offline-First: Cola de mensajes persistente con reintentos automáticos para zonas rurales
+- Mapeo Completo IPS: Medicamentos, Alergias, Diagnósticos, Procedimientos, Inmunizaciones, Observaciones
+- Seguridad: TLS 1.2+, control de acceso por privilegios, trazabilidad completa
+- Monitoreo: Interfaz web para supervisión de mensajes y diagnóstico de errores
 
 ## Requisitos
 
-- **OpenMRS Core**: 1.11.6 o superior
-- **Java**: JDK 8
-- **Maven**: 3.x
-- **Base de Datos**: MySQL 5.7+ o compatible
-- **Servidor FHIR**: HAPI FHIR R4 (RENHICE/Dyaku)
+- OpenMRS Core: 1.11.6 o superior
+- Java: JDK 8
+- Maven: 3.x
+- Base de Datos: MySQL 5.7+ o compatible
+- Servidor FHIR: HAPI FHIR R4 (RENHICE/Dyaku)
 
 ## Instalación
 
@@ -44,12 +44,13 @@ mvn clean install
 
 Copiar el archivo `omod/target/sihsalusinterop-1.0.0.omod` a OpenMRS:
 
-- **Vía UI**: Administración → Gestionar Módulos → Agregar o Actualizar Módulo
-- **Vía Docker**: 
-  ```bash
-  docker cp sihsalusinterop-1.0.0.omod peruHCE-backend:/openmrs/data/modules/
-  docker restart peruHCE-backend
-  ```
+Vía UI: Administración → Gestionar Módulos → Agregar o Actualizar Módulo
+
+Vía Docker: 
+```bash
+docker cp sihsalusinterop-1.0.0.omod peruHCE-backend:/openmrs/data/modules/
+docker restart peruHCE-backend
+```
 
 ### 3. Configurar Propiedades Globales
 
@@ -107,7 +108,7 @@ Base URL: `http://localhost/openmrs/ws/rest/v1/interop`
 | POST | `/retry/{id}` | Reintentar mensaje específico |
 | GET | `/patient/{dni}` | Consultar paciente en RENHICE |
 
-Ver documentación completa en: [`docs/MANUAL_TECNICO.md`](docs/MANUAL_TECNICO.md)
+Ver documentación completa en el Manual Técnico en la carpeta docs/
 
 ## Arquitectura
 
@@ -156,31 +157,35 @@ Medidas implementadas:
 - Trazabilidad completa de operaciones
 - Validación de recursos FHIR
 
-Ver: [`docs/SEGURIDAD_Y_CONFORMIDAD.md`](docs/SEGURIDAD_Y_CONFORMIDAD.md)
+Ver documento de Seguridad y Conformidad en la carpeta docs/
 
 ## Documentación
 
-- [Manual Técnico](docs/MANUAL_TECNICO.md): Guía completa de instalación, configuración y uso
-- [Pruebas de Interoperabilidad](docs/PRUEBAS_INTEROPERABILIDAD.md): Procedimientos de testing
-- [Seguridad y Conformidad](docs/SEGURIDAD_Y_CONFORMIDAD.md): Normativa y medidas de seguridad
+Todos los documentos se encuentran en la carpeta `docs/`:
+
+- **MANUAL_TECNICO.md**: Guía completa de instalación, configuración y uso
+- **PLAN_DE_PRUEBAS.md**: Plan formal de pruebas para la tesis (30 casos de prueba)
+- **GUIA_VERIFICACION.md**: Procedimientos de verificación y validación del componente
+- **PRUEBAS_INTEROPERABILIDAD.md**: Pruebas funcionales de interoperabilidad
+- **SEGURIDAD_Y_CONFORMIDAD.md**: Normativa y medidas de seguridad implementadas
 
 ## Troubleshooting
 
 ### Error: "Failed to retrieve server metadata"
 
-**Solución**: Verificar que:
+Solución: Verificar que:
 1. El servidor HAPI FHIR esté ejecutándose
 2. La propiedad global `sihsalusinterop.renhice.endpoint` sea correcta
 3. Si usan Docker, usar nombre de contenedor (no `localhost`)
 
 ### Mensajes quedan en estado ERROR
 
-**Solución**: 
+Solución: 
 1. Ver `errorMessage` en interfaz de monitoreo
 2. Revisar logs: `docker logs peruHCE-backend`
 3. Reintentar manualmente desde interfaz
 
-Ver sección completa de Troubleshooting en: [`docs/MANUAL_TECNICO.md`](docs/MANUAL_TECNICO.md#9-mantenimiento-y-troubleshooting)
+Ver sección completa de Troubleshooting en el Manual Técnico.
 
 ## Pruebas
 
@@ -197,7 +202,7 @@ py populate_test_data.py
 
 ### Ejecutar Pruebas
 
-Ver: [`docs/PRUEBAS_INTEROPERABILIDAD.md`](docs/PRUEBAS_INTEROPERABILIDAD.md)
+Ver: Plan de Pruebas en la carpeta docs/
 
 ## Desarrollo
 
@@ -242,10 +247,10 @@ Este módulo es parte del proyecto SIH.SALUS del Hospital Santa Clotilde y se de
 
 ## Referencias
 
-- [HL7 FHIR R4 Documentation](https://hl7.org/fhir/R4/)
-- [Dyaku MINSA Perú](https://dyaku.minsa.gob.pe/fhir)
-- [OpenMRS Developer Guide](https://guide.openmrs.org/)
-- [Open Concept Lab](https://openconceptlab.org/)
+- HL7 FHIR R4 Documentation: https://hl7.org/fhir/R4/
+- Dyaku MINSA Perú: https://dyaku.minsa.gob.pe/fhir
+- OpenMRS Developer Guide: https://guide.openmrs.org/
+- Open Concept Lab: https://openconceptlab.org/
 
 ---
 
