@@ -383,6 +383,187 @@ public class DyakuSubmissionController {
 	}
 	
 	/**
+	 * POST /openmrs/ws/rest/v1/interop/patient/import/{identifier}
+	 * 
+	 * Importa el IPS completo de un paciente desde RENHICE y lo guarda en OpenMRS local
+	 * 
+	 * @param identifier Identificador del paciente (DNI)
+	 * @param system Sistema de identificación (default: OID RENIEC)
+	 * @param endpoint Endpoint del servidor FHIR (default: http://hapi-fhir-server:8080/fhir)
+	 */
+	@RequestMapping(value = "/patient/import/{identifier}", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> importPatientFromRenhice(
+			@PathVariable("identifier") String identifier,
+			@RequestParam(value = "system", required = false, defaultValue = "urn:oid:2.16.840.1.113883.4.904") String system,
+			@RequestParam(value = "endpoint", required = false, defaultValue = "http://hapi-fhir-server:8080/fhir") String endpoint) {
+		
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			log.info(">>> REST API: Importando paciente completo desde RENHICE. DNI: " + identifier);
+			
+			// Usar HAPI FHIR Client
+			ca.uhn.fhir.context.FhirContext ctx = ca.uhn.fhir.context.FhirContext.forR4();
+			ca.uhn.fhir.rest.client.api.IGenericClient client = ctx.newRestfulGenericClient(endpoint);
+			
+			// 1. Buscar paciente en RENHICE
+			org.hl7.fhir.r4.model.Bundle patientBundle = client.search()
+				.forResource(org.hl7.fhir.r4.model.Patient.class)
+				.where(org.hl7.fhir.r4.model.Patient.IDENTIFIER.exactly().systemAndCode(system, identifier))
+				.returnBundle(org.hl7.fhir.r4.model.Bundle.class)
+				.execute();
+			
+			if (patientBundle.getEntry() == null || patientBundle.getEntry().isEmpty()) {
+				response.put("success", false);
+				response.put("message", "Paciente no encontrado en RENHICE con DNI: " + identifier);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+			}
+			
+			org.hl7.fhir.r4.model.Patient fhirPatient = (org.hl7.fhir.r4.model.Patient) patientBundle.getEntryFirstRep().getResource();
+			String fhirPatientId = fhirPatient.getIdElement().getIdPart();
+			
+			log.info(">>> Paciente encontrado en RENHICE. ID: " + fhirPatientId);
+			
+			// 2. Verificar si paciente existe localmente por DNI
+			org.openmrs.api.PatientService patientService = Context.getPatientService();
+			java.util.List<org.openmrs.Patient> localPatients = patientService.getPatients(null, identifier, null, true);
+			
+			org.openmrs.Patient localPatient = null;
+			boolean isNewPatient = localPatients.isEmpty();
+			
+			if (isNewPatient) {
+				log.info(">>> Paciente NO existe localmente. Creando nuevo paciente...");
+				// Crear nuevo paciente usando mapper
+				localPatient = org.openmrs.module.sihsalusinterop.api.mapper.FhirToOpenMRSPatientMapper.mapToOpenMRS(fhirPatient);
+				localPatient = patientService.savePatient(localPatient);
+				log.info(">>> Paciente creado localmente. ID: " + localPatient.getPatientId());
+			} else {
+				log.info(">>> Paciente ya existe localmente. Actualizando datos...");
+				localPatient = localPatients.get(0);
+				localPatient = org.openmrs.module.sihsalusinterop.api.mapper.FhirToOpenMRSPatientMapper.updateOpenMRSPatient(localPatient, fhirPatient);
+				localPatient = patientService.savePatient(localPatient);
+				log.info(">>> Paciente actualizado. ID: " + localPatient.getPatientId());
+			}
+			
+			// 3. Importar recursos clínicos del IPS
+			int conditionsImported = importConditionsFromRenhice(client, fhirPatientId, localPatient);
+			int observationsImported = importObservationsFromRenhice(client, fhirPatientId, localPatient);
+			
+			// 4. Respuesta
+			response.put("success", true);
+			response.put("patientId", localPatient.getPatientId());
+			response.put("patientUuid", localPatient.getUuid());
+			response.put("isNewPatient", isNewPatient);
+			response.put("message", isNewPatient ? "Paciente importado exitosamente desde RENHICE" : "Paciente actualizado exitosamente con datos de RENHICE");
+			
+			Map<String, Object> imported = new HashMap<>();
+			imported.put("conditions", conditionsImported);
+			imported.put("observations", observationsImported);
+			response.put("imported", imported);
+			
+			log.info(">>> Importación completada. Conditions: " + conditionsImported + ", Observations: " + observationsImported);
+			
+			return ResponseEntity.ok(response);
+			
+		} catch (Exception ex) {
+			log.error(">>> REST API: Error al importar paciente desde RENHICE", ex);
+			response.put("success", false);
+			response.put("message", "Error al importar: " + ex.getMessage());
+			response.put("error", ex.getClass().getSimpleName());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+	
+	/**
+	 * Importa Conditions (diagnósticos) desde RENHICE para un paciente
+	 */
+	private int importConditionsFromRenhice(ca.uhn.fhir.rest.client.api.IGenericClient client, String fhirPatientId, org.openmrs.Patient localPatient) {
+		int imported = 0;
+		
+		try {
+			log.info(">>> Importando Conditions para paciente FHIR ID: " + fhirPatientId);
+			
+			// Buscar Conditions del paciente en RENHICE
+			org.hl7.fhir.r4.model.Bundle conditionsBundle = client.search()
+				.forResource(org.hl7.fhir.r4.model.Condition.class)
+				.where(org.hl7.fhir.r4.model.Condition.PATIENT.hasId(fhirPatientId))
+				.returnBundle(org.hl7.fhir.r4.model.Bundle.class)
+				.execute();
+			
+			if (conditionsBundle.getEntry() != null && !conditionsBundle.getEntry().isEmpty()) {
+				org.openmrs.api.ObsService obsService = Context.getObsService();
+				
+				for (org.hl7.fhir.r4.model.Bundle.BundleEntryComponent entry : conditionsBundle.getEntry()) {
+					if (entry.getResource() instanceof org.hl7.fhir.r4.model.Condition) {
+						org.hl7.fhir.r4.model.Condition fhirCondition = (org.hl7.fhir.r4.model.Condition) entry.getResource();
+						
+						// Mapear a Obs
+						org.openmrs.Obs obs = org.openmrs.module.sihsalusinterop.api.mapper.FhirToOpenMRSConditionMapper.mapToOpenMRS(fhirCondition, localPatient, null);
+						
+						if (obs.getConcept() != null && (obs.getValueCoded() != null || obs.getValueText() != null)) {
+							obsService.saveObs(obs, "Imported from RENHICE");
+							imported++;
+							log.info(">>> Condition importado: " + (obs.getValueText() != null ? obs.getValueText() : obs.getValueCoded().getName()));
+						}
+					}
+				}
+			}
+			
+			log.info(">>> Total Conditions importados: " + imported);
+			
+		} catch (Exception e) {
+			log.error(">>> Error al importar Conditions", e);
+		}
+		
+		return imported;
+	}
+	
+	/**
+	 * Importa Observations (signos vitales, etc.) desde RENHICE para un paciente
+	 */
+	private int importObservationsFromRenhice(ca.uhn.fhir.rest.client.api.IGenericClient client, String fhirPatientId, org.openmrs.Patient localPatient) {
+		int imported = 0;
+		
+		try {
+			log.info(">>> Importando Observations para paciente FHIR ID: " + fhirPatientId);
+			
+			// Buscar Observations del paciente en RENHICE
+			org.hl7.fhir.r4.model.Bundle observationsBundle = client.search()
+				.forResource(org.hl7.fhir.r4.model.Observation.class)
+				.where(org.hl7.fhir.r4.model.Observation.PATIENT.hasId(fhirPatientId))
+				.returnBundle(org.hl7.fhir.r4.model.Bundle.class)
+				.execute();
+			
+			if (observationsBundle.getEntry() != null && !observationsBundle.getEntry().isEmpty()) {
+				org.openmrs.api.ObsService obsService = Context.getObsService();
+				
+				for (org.hl7.fhir.r4.model.Bundle.BundleEntryComponent entry : observationsBundle.getEntry()) {
+					if (entry.getResource() instanceof org.hl7.fhir.r4.model.Observation) {
+						org.hl7.fhir.r4.model.Observation fhirObservation = (org.hl7.fhir.r4.model.Observation) entry.getResource();
+						
+						// Mapear a Obs
+						org.openmrs.Obs obs = org.openmrs.module.sihsalusinterop.api.mapper.FhirToOpenMRSObservationMapper.mapToOpenMRS(fhirObservation, localPatient, null);
+						
+						if (obs.getConcept() != null) {
+							obsService.saveObs(obs, "Imported from RENHICE");
+							imported++;
+							log.info(">>> Observation importado: " + obs.getConcept().getName());
+						}
+					}
+				}
+			}
+			
+			log.info(">>> Total Observations importados: " + imported);
+			
+		} catch (Exception e) {
+			log.error(">>> Error al importar Observations", e);
+		}
+		
+		return imported;
+	}
+	
+	/**
 	 * GET /openmrs/ws/rest/v1/interop/status
 	 * 
 	 * Endpoint de health check / status

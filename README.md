@@ -161,13 +161,12 @@ Ver documento de Seguridad y Conformidad en la carpeta docs/
 
 ## Documentación
 
-Todos los documentos se encuentran en la carpeta `docs/`:
+Documentación principal en la carpeta `docs/`:
 
-- **MANUAL_TECNICO.md**: Guía completa de instalación, configuración y uso
-- **PLAN_DE_PRUEBAS.md**: Plan formal de pruebas para la tesis (30 casos de prueba)
-- **GUIA_VERIFICACION.md**: Procedimientos de verificación y validación del componente
-- **PRUEBAS_INTEROPERABILIDAD.md**: Pruebas funcionales de interoperabilidad
-- **SEGURIDAD_Y_CONFORMIDAD.md**: Normativa y medidas de seguridad implementadas
+- **MANUAL_USO.md**: Guía rápida de instalación y uso diario
+- **MANUAL_TECNICO.md**: Documentación técnica completa
+- **PRUEBAS_INTEROPERABILIDAD.md**: Pruebas funcionales y ejemplos
+- **SEGURIDAD_Y_CONFORMIDAD.md**: Normativa y medidas de seguridad
 
 ## Troubleshooting
 
@@ -202,7 +201,11 @@ py populate_test_data.py
 
 ### Ejecutar Pruebas
 
-Ver: Plan de Pruebas en la carpeta docs/
+```powershell
+.\test_interoperability.ps1
+```
+
+Ver: `docs/PRUEBAS_INTEROPERABILIDAD.md` para pruebas detalladas
 
 ## Desarrollo
 
