@@ -1,0 +1,36 @@
+name: Build OMOD
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*", "release/**"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "8"
+          cache: maven
+
+      - name: Build omod
+        run: mvn -B -DskipTests clean package
+
+      - name: Upload omod artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sihsalusinterop-omod
+          path: |
+            omod/target/*.omod
+            omod/target/*.jar
+          if-no-files-found: error
