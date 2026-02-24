@@ -16,7 +16,7 @@
     <description>API project for SIH SALUS Interoperability</description>
 
     <properties>
-        <hapiFhirVersion>5.7.0</hapiFhirVersion>
+        <hapiFhirVersion>5.7.9</hapiFhirVersion>
     </properties>
 
     <dependencies>

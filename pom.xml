@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.openmrs.maven.parents</groupId>
 		<artifactId>maven-parent-openmrs-module</artifactId>
-		<version>1.1.1</version>
+		<version>1.1.2</version>
 	</parent>
 
 	<groupId>org.openmrs.module</groupId>
@@ -113,16 +113,10 @@
 
 
 	<properties>
-		<openmrsPlatformVersion>2.3.0</openmrsPlatformVersion>
-		<openMRSVersion>2.3.2</openMRSVersion>
-		<openMRSMinorVersion>2.3</openMRSMinorVersion>
-		<legacyuiVersion>1.7.0</legacyuiVersion>
-		<jacksonVersion>1.5.0</jacksonVersion>
-		<junitJupiterVersion>5.7.0</junitJupiterVersion>
-		<mockitoVersion>3.5.11</mockitoVersion>
+		<openmrsPlatformVersion>2.4.1</openmrsPlatformVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<hapiFhirVersion>5.7.0</hapiFhirVersion>
+		<hapiFhirVersion>5.7.9</hapiFhirVersion>
 	</properties>
 </project>
