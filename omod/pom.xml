@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.openmrs.module</groupId>
     <artifactId>sihsalusinterop</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.3</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.openmrs.module</groupId>
       <artifactId>sihsalusinterop-api</artifactId>
-      <version>1.0.0</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openmrs.web</groupId>
@@ -36,6 +36,13 @@
       <artifactId>openmrs-web</artifactId>
       <scope>provided</scope>
       <classifier>tests</classifier>
+    </dependency>
+    <!-- HAPI FHIR: provided by fhir2 module at runtime -->
+    <dependency>
+      <groupId>ca.uhn.hapi.fhir</groupId>
+      <artifactId>hapi-fhir-structures-r4</artifactId>
+      <version>${hapiFhirVersion}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

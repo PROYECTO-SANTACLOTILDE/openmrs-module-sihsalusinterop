@@ -11,7 +11,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>sihsalusinterop</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.3</version>
 	<packaging>pom</packaging>
 	<name>SIH SALUS Interoperability Module</name>
 	<description>Módulo de Interoperabilidad para OpenMRS - Hospital Santa Clotilde. Implementa conectividad FHIR R4 con RENHICE.</description>
