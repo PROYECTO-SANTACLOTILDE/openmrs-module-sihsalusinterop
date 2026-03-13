@@ -121,8 +121,8 @@
 		<junitJupiterVersion>5.7.0</junitJupiterVersion>
 		<mockitoVersion>3.5.11</mockitoVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<hapiFhirVersion>5.7.0</hapiFhirVersion>
 	</properties>
 </project>
